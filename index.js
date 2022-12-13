@@ -1,15 +1,28 @@
 const path = require('path');
+const cors = require('cors');
 const express = require('express');
 
 const app = express();
 const port = 3000;
 
-app.use(express.static(__dirname + '/public'));
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname+'/index.html'));
+app.use(cors());
+app.use(express.static(path.join(__dirname, 'public')))
+//io.set('log level', 1);
+
+app.get('/', function(req, res) {
+    res.sendfile('drawing.html');
+ }); 
+
+
+io.on('connection', function (socket) {
+    socket.on('mousemove', function (data) {
+        socket.broadcast.emit('drawing', data);
+    });
 });
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}!`)
-});
+http.listen(port, function() {
+    console.log(`Example app listening on port ${port}!`);
+ });
