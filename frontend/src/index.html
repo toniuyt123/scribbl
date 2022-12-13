@@ -1,13 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skribbl</title>
-  <link rel="stylesheet" href="../build/index.css">
-</head>
-<body class="bg-gray-900">
-  <div></div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skribbl</title>
+    <link rel="stylesheet" href="../build/index.css" />
+  </head>
+  <body>
+    <div class="h-screen w-screen overflow-hidden">
+      <!-- <div
+        class="absolute h-full w-full bg-[url(/src/images/background.webp)] bg-center contrast-50"
+      ></div> -->
+
+      <div
+        class="absolute h-full w-full bg-[url(https://img.freepik.com/free-photo/art-stuff-around-paper-sheet_23-2147895428.jpg?w=2000)] bg-cover bg-center contrast-50"
+      ></div>
+
+      <div class="relative flex h-full items-center justify-center">
+        <div class="flex flex-col gap-4">
+          <div class="mb-4 text-center font-serif text-5xl">SKRIBBL</div>
+          <div
+            class="flex justify-center rounded-sm bg-gray-100/80 p-4 text-5xl tracking-tighter shadow-sm backdrop-blur"
+          >
+            <div>n _ b _ q _ _ _</div>
+          </div>
+          <div class="flex gap-4">
+            <div class="h-fit space-y-2 text-xl font-semibold">
+              <div
+                class="flex w-80 items-center gap-4 rounded-sm bg-gray-100/80 p-4 shadow-sm backdrop-blur"
+              >
+                <img
+                  class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
+                  src="https://images.unsplash.com/photo-1534432586043-ead5b99229fb"
+                />
+                Player 1
+              </div>
+              <div
+                class="flex w-80 items-center gap-4 rounded-sm bg-gray-100/80 p-4 shadow-sm backdrop-blur"
+              >
+                <img
+                  class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
+                  src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9"
+                />
+                Player 2
+              </div>
+              <div
+                class="flex w-80 items-center gap-4 rounded-sm bg-gray-100/80 p-4 shadow-sm backdrop-blur"
+              >
+                <img
+                  class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
+                  src="https://images.unsplash.com/photo-1517849845537-4d257902454a"
+                />
+                Player 3
+              </div>
+            </div>
+            <div class="flex h-fit flex-col">
+              <div
+                class="relative z-20 h-[512px] w-[512px] rounded-sm bg-gray-100/80 shadow-2xl backdrop-blur"
+              >
+                <!-- CANVAS HERE -->
+                <!-- <div
+                class="h-full w-full bg-[url(https://artfulhaven.com/wp-content/uploads/2020/07/EASY-DOODLES-TO-DRAW4.jpg)]"
+              ></div> -->
+                <!-- / CANVAS HERE -->
+              </div>
+            </div>
+            <div class="mask-image-fade relative flex h-[512px] w-80">
+              <div class="absolute bottom-0 z-10 flex w-full flex-col gap-2">
+                <div
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 opacity-30 shadow-sm backdrop-blur"
+                >
+                  neshto
+                </div>
+                <div
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 opacity-60 shadow-sm backdrop-blur"
+                >
+                  neshto
+                </div>
+                <div
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 opacity-90 shadow-sm backdrop-blur"
+                >
+                  neshto
+                </div>
+                <div
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 shadow-sm backdrop-blur"
+                >
+                  neshto
+                </div>
+                <div
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 shadow-sm backdrop-blur"
+                >
+                  neshto
+                </div>
+                <div
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 shadow-sm backdrop-blur"
+                >
+                  neshto
+                </div>
+                <div
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 shadow-sm backdrop-blur"
+                >
+                  neshto
+                </div>
+                <input
+                  class="text-md max-h-20 rounded-sm bg-gray-100/80 p-4 shadow-md backdrop-blur placeholder:text-gray-500 focus:outline-none"
+                  placeholder="Type your guess here..."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
