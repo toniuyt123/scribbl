@@ -6,16 +6,17 @@ const config = {
 window.onload = () => {
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
-    const socket = io.connect();
+    const socket = io.connect(config.url, { transports : ['websocket'] });
     const id = Math.round(Date.now()*Math.random());
     let isDrawing = false;
     let prevX, prevY;
 
-    canvas.width = document.body.clientWidth;
-    canvas.height = document.body.clientHeight; 
+    canvas.width = canvas.parentNode.clientWidth;
+    canvas.height = canvas.parentNode.clientHeight; 
 
     function toCanvasCoords(x, y) {
-        return [x-canvas.offsetTop, y-canvas.offsetLeft];
+        const offsets = canvas.getBoundingClientRect();
+        return [x-offsets.left, y-offsets.top];
     }
     
     function drawLine(from, to) {
@@ -42,15 +43,14 @@ window.onload = () => {
     let lastEmit = Date.now();
     canvas.onmousedown = (e) => {
         isDrawing = true;
-        [prevX, prevY] = toCanvasCoords(e.pageX, e.pageY);
+        [prevX, prevY] = toCanvasCoords(e.clientX, e.clientY);
         socket.emit('mousemove', { id, x: prevX, y: prevY, drawing: false });
     };
 
     canvas.addEventListener('mousemove', (e) => {
         if (isDrawing) {
-            const [newX, newY] = toCanvasCoords(e.pageX, e.pageY);
+            const [newX, newY] = toCanvasCoords(e.clientX, e.clientY);
 
-            console.log(Date.now());
             if (Date.now() - lastEmit > config.emitDelay) {
                 socket.emit('mousemove', { id, x: newX, y: newY, drawing: true });
                 lastEmit = Date.now();

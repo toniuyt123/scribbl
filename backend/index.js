@@ -12,10 +12,6 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')))
 //io.set('log level', 1);
 
-app.get('/', function(req, res) {
-    res.sendfile('drawing.html');
- }); 
-
 
 io.on('connection', function (socket) {
     socket.on('mousemove', function (data) {

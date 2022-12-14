@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Skribbl</title>
     <link rel="stylesheet" href="../build/index.css" />
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="js/drawing.js"></script>
   </head>
   <body>
     <div class="h-screen w-screen overflow-hidden">
@@ -81,11 +83,9 @@
               <div
                 class="relative z-20 h-[488px] w-[512px] rounded-sm bg-gray-100/70 shadow-2xl backdrop-blur"
               >
-                <!-- CANVAS HERE -->
-                <!-- <div
-                class="h-full w-full bg-[url(https://artfulhaven.com/wp-content/uploads/2020/07/EASY-DOODLES-TO-DRAW4.jpg)]"
-              ></div> -->
-                <!-- / CANVAS HERE -->
+              <canvas id="board">
+    
+              </canvas>
               </div>
             </div>
             <div class="mask-image-fade relative flex h-[488px] w-80">
