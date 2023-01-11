@@ -1,9 +1,11 @@
+import '../index.css'
+
 const config = {
     url: 'http://localhost:3000/',
     emitDelay: 10,
 };
 
-window.onload = () => {
+export function init() {
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
     const socket = io.connect(config.url, { transports : ['websocket'] });
