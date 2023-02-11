@@ -9,6 +9,10 @@ export function init() {
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
     const socket = io.connect(config.url, { transports : ['websocket'] });
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get('roomId');
+    socket.emit('join', roomId);
+    
     const id = Math.round(Date.now()*Math.random());
     let isDrawing = false;
     let prevX, prevY;
@@ -69,6 +73,6 @@ export function init() {
     });
 
     canvas.addEventListener('mouseleave', () =>{
-        drawing = false;
+        isDrawing = false;
     });
 }

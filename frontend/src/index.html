@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Skribbl</title>
-    <!--link rel="stylesheet" href="../build/index.css" /-->
+    <!--link rel="stylesheet" href="../build/index.css"-->
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
-    <script src="js/main.js"></script>
+    <!--script type="module" src="js/main.js"></script-->
   </head>
   <body>
     <div class="h-screen w-screen overflow-hidden">
@@ -28,7 +28,7 @@
             <div>n _ b _ q _ _ _</div>
           </div>
           <div class="flex gap-4">
-            <div class="h-fit space-y-2">
+            <div id="players-container" class="h-fit space-y-2">
               <div
                 class="flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur"
               >

@@ -1,4 +1,5 @@
-import * as drawing from './drawing'
+import '../index.css';
+import * as drawing from './drawing.js'
 
 window.onload = () => {
     drawing.init()
