@@ -28,128 +28,15 @@
             <div>n _ b _ q _ _ _</div>
           </div>
           <div class="flex gap-4">
-            <div id="players-container" class="h-fit space-y-2">
-              <div
-                class="flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur"
-              >
-                <img
-                  class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
-                  src="https://images.unsplash.com/photo-1534432586043-ead5b99229fb"
-                />
-                <div class="flex flex-col items-center">
-                  <div class="text-xl font-semibold">Player 1</div>
-                  <div class="text-md">Points: 5678</div>
-                </div>
-                <div class="w-12 text-2xl font-bold">#1</div>
-              </div>
-              <div
-                class="flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur"
-              >
-                <div class="w-12 text-2xl font-bold">#3</div>
-                <div class="flex flex-col items-center">
-                  <div class="text-xl font-semibold">Player 2</div>
-                  <div class="text-md">Points: 1234</div>
-                </div>
-                <div class="relative">
-                  <img
-                    class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
-                    src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9"
-                  />
-                  <div
-                    class="absolute -right-3 -bottom-3 animate-wiggle text-2xl"
-                  >
-                    <img
-                      class="h-10 w-10 object-contain"
-                      src="https://cdn-icons-png.flaticon.com/512/1170/1170177.png"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur"
-              >
-                <img
-                  class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
-                  src="https://images.unsplash.com/photo-1517849845537-4d257902454a"
-                />
-                <div class="flex flex-col items-center">
-                  <div class="text-xl font-semibold">Player 3</div>
-                  <div class="text-md">Points: 3456</div>
-                </div>
-                <div class="w-12 text-2xl font-bold">#2</div>
-              </div>
-            </div>
+            <scribbl-leaderboard></scribbl-leaderboard>
             <div class="flex h-fit flex-col">
               <div
                 class="relative z-20 h-[488px] w-[512px] rounded-sm bg-gray-100/70 shadow-2xl backdrop-blur"
               >
-              <canvas id="board">
-    
-              </canvas>
+                <canvas id="board"> </canvas>
               </div>
             </div>
-            <div class="mask-image-fade relative flex h-[488px] w-80">
-              <div class="absolute bottom-0 z-10 flex w-full flex-col gap-2">
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 opacity-10 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 1:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 opacity-30 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 2:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 opacity-60 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 3:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 opacity-90 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 1:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 2:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 3:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 1:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 2:</span>
-                  <span>neshto</span>
-                </div>
-                <div
-                  class="text-md rounded-sm bg-gray-100/70 p-2 shadow-sm backdrop-blur"
-                >
-                  <span class="font-semibold">Player 1:</span>
-                  <span>neshto</span>
-                </div>
-                <input
-                  class="text-md rounded-sm bg-gray-100/70 p-4 shadow-md backdrop-blur placeholder:text-gray-500 focus:outline-none"
-                  placeholder="Type your guess here..."
-                />
-              </div>
-            </div>
+            <scribbl-chat></scribbl-chat>
           </div>
         </div>
       </div>
