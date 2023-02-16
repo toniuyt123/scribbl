@@ -1,6 +1,7 @@
 import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 import Message from "./message";
+import * as io from "../socket.js";
 
 export class Chat extends BaseElement {
   init() {
@@ -15,6 +16,24 @@ export class Chat extends BaseElement {
         </div>
       </div>
     `;
+
+    io.socket.on('msg', (msgData) => {
+      this.addMessage(msgData);
+    });
+
+    io.socket.on('joined', (data) => {
+      this.addMessage({
+        username: data.username,
+        type: 'joined'
+      });
+    });
+
+    io.socket.on('leave', (data) => {
+      this.addMessage({
+        username: data.username,
+        type: 'left'
+      });
+    });
   }
 
   addMessage(messageData) {
@@ -29,25 +48,29 @@ export class Chat extends BaseElement {
         const message = e.target.value;
         e.target.value = "";
         console.log("Message sent:", message);
-        // TODO send message to server
-        this.addMessage({
+        
+        const msgData = {
           username: "Player 2",
           content: message,
           type: "message",
-        });
+        };
+
+        // TODO: io doesn't exclude sender for some reason??
+        //this.addMessage(msgData);
+        io.sendChatMessage(msgData);
       }
     });
 
     // vmesto toq set interval callbacka trqq da e se podava na socket modula i toi da go vika pri chat event
-    setInterval(() => {
-      this.addMessage({
-        username: "Player 1",
-        content: Math.random(),
-        type: ["message", "drawing", "guessed", "joined", "left"][
-          Math.floor(Math.random() * 5)
-        ],
-      });
-    }, 1000);
+    // setInterval(() => {
+    //   this.addMessage({
+    //     username: "Player 1",
+    //     content: Math.random(),
+    //     type: ["message", "drawing", "guessed", "joined", "left"][
+    //       Math.floor(Math.random() * 5)
+    //     ],
+    //   });
+    // }, 1000);
   }
 }
 customElements.define("scribbl-chat", Chat);

@@ -1,4 +1,5 @@
-import '../index.css'
+import '../index.css';
+import { socket } from './socket.js';
 
 const config = {
     url: 'http://localhost:3000/',
@@ -8,10 +9,7 @@ const config = {
 export function init() {
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
-    const socket = io.connect(config.url, { transports : ['websocket'] });
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('roomId');
-    socket.emit('join', roomId);
+
     
     const id = Math.round(Date.now()*Math.random());
     let isDrawing = false;

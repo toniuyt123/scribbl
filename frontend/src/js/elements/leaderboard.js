@@ -1,6 +1,7 @@
 import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 import "./player-badge";
+import * as io from "../socket.js";
 
 export default class Leaderboard extends BaseElement {
   init() {
@@ -10,41 +11,41 @@ export default class Leaderboard extends BaseElement {
     `;
   }
 
-  connectedCallback() {
-    // fetch players from server
-    const players = [
-      {
-        username: `&<>"'`,
-        points: 5678,
-        rank: 1,
-        isDrawing: false,
-      },
-      {
-        username: "Player 2",
-        points: 1234,
-        rank: 3,
-        isDrawing: true,
-      },
-      {
-        username: "Player 3",
-        points: 3456,
-        rank: 2,
-        isDrawing: false,
-      },
-    ];
+  makePlayerBadge(player) {
+    return html`
+      <player-badge
+        username="${player.username}"
+        points="${player.points}"
+        rank="${player.rank}"
+        isdrawing="${player.isDrawing}"
+      ></player-badge>
+    `;
+  }
+
+  async connectedCallback() {
+    //TODO: remove hardcode
+    console.log('test');
+    const players = await (await fetch(`http://localhost:3000/users/${io.roomId}`)).json();
+    console.log(players);
 
     this.querySelector(".players-container").innerHTML = html`
       ${players.map(
-        (player) => html`
-          <player-badge
-            username="${player.username}"
-            points="${player.points}"
-            rank="${player.rank}"
-            isdrawing="${player.isDrawing}"
-          ></player-badge>
-        `
+        (player) => this.makePlayerBadge(player)
       )}
     `;
+
+    io.socket.on('joined', (data) => {
+      this.querySelector(`.players-container`).innerHTML += (this.makePlayerBadge({
+        username: data.username,
+        points: 0,
+        isDrawing: false,
+        rank: 0 //TODO
+      }));
+    });
+
+    io.socket.on('leave', (data) => {
+      this.querySelector(`.players-container player-badge[username="${data.username}"]`).remove();
+    });
   }
 }
 

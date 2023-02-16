@@ -16,12 +16,35 @@ const rooms = io.of("/").adapter.rooms;
 const sids = io.of("/").adapter.sids;
 
 function userRoom(id) {
-    return Array.from(sids.get(socket.id))[0];
+    return Array.from(sids.get(id))[0];
 }
 
+const roomInfo = {};
+
+function addUserToRoom(params) {
+    roomInfo[params.room] ||= { users: {}, round: 0, word: '' };
+    roomInfo[params.room].users[params.socketId] = {
+        username: params.username,
+        points: 0,
+        rank: 1,
+        isDrawing: false,
+    };
+}
+
+app.get('/users/:roomId', (req, res) => {
+    if (roomInfo[req.params.roomId] == undefined) {
+        return res.send([]);
+    }
+
+    const resArr = Object.keys(roomInfo[req.params.roomId].users).map(key => { return roomInfo[req.params.roomId].users[key] });
+    //console.log(res);
+    //console.log(roomInfo[req.params.roomId] || [])
+    return res.send(resArr);
+});
+
 io.on('connection', (socket) => {
-    socket.on('join', (room) => {
-        if (room == undefined) {
+    socket.on('join', (data) => {
+        if (data.room == undefined) {
             // const roomId = (new Date()).getTime();
             // socket.join(roomId);
             // console.log('Joinned', roomId);
@@ -29,15 +52,41 @@ io.on('connection', (socket) => {
             return;
         }
 
+        
         //ASSERT(rooms[room].length < 8)
-        socket.join(room);
+        socket.join(data.room);
         socket.leave(socket.id);
-        console.log('Joinned', room);
+
+        data.username ||= `Player ${rooms.get(data.room).size}`;
+        data.socketId = socket.id;
+        addUserToRoom(data);
+
+        socket.to(userRoom(socket.id)).emit('joined', {
+            username: data.username,
+        });
     });
 
     socket.on('mousemove', (data) => {
         //console.log(sids, socket.id);
-        socket.to(userRoom(socketId)).emit('drawing', data);
+        socket.to(userRoom(socket.id)).emit('drawing', data);
+    });
+
+    socket.on('msg', (data) => {
+        //console.log(userRoom(socket.id));
+        //console.log(sids, rooms, socket.id)
+        socket.to(userRoom(socket.id)).emit('msg', data);
+    });
+
+    socket.on("disconnecting", (reason) => {
+        if (roomInfo[userRoom(socket.id)] == undefined) {
+            return;
+        }
+        
+        socket.to(userRoom(socket.id)).emit('leave', {
+            username: roomInfo[userRoom(socket.id)].users[socket.id].username
+        });
+
+        delete roomInfo[userRoom(socket.id)].users[socket.id];
     });
 });
 
