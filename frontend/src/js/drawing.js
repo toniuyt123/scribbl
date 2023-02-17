@@ -1,5 +1,5 @@
 import '../index.css';
-import { socket } from './socket.js';
+import { socket, canDraw } from './socket.js';
 
 const config = {
     url: 'http://localhost:3000/',
@@ -46,13 +46,17 @@ export function init() {
 
     let lastEmit = Date.now();
     canvas.onmousedown = (e) => {
+        if (! canDraw()) {
+            return;
+        }
+
         isDrawing = true;
         [prevX, prevY] = toCanvasCoords(e.clientX, e.clientY);
         socket.emit('mousemove', { id, x: prevX, y: prevY, drawing: false });
     };
 
     canvas.addEventListener('mousemove', (e) => {
-        if (isDrawing) {
+        if (isDrawing && canDraw()) {
             const [newX, newY] = toCanvasCoords(e.clientX, e.clientY);
 
             if (Date.now() - lastEmit > config.emitDelay) {
@@ -67,10 +71,18 @@ export function init() {
     });
 
     canvas.addEventListener('mouseup', (e) => {
+        if (! canDraw()) {
+            return;
+        }
+
         isDrawing = false;
     });
 
     canvas.addEventListener('mouseleave', () =>{
+        if (! canDraw()) {
+            return;
+        }
+        
         isDrawing = false;
     });
 }

@@ -1,12 +1,18 @@
 export default class BaseElement extends HTMLElement {
   constructor(constructorProps) {
     super();
+
+    this.init(constructorProps || this.getAttributesProps());
+  }
+
+  getAttributesProps() {
     const attributeNames = this.getAttributeNames();
     const attributeProps = {};
     for (const attributeName of attributeNames) {
       attributeProps[attributeName] = this.getAttribute(attributeName);
     }
-    this.init(constructorProps || attributeProps);
+
+    return attributeProps;
   }
 
   init(props) {

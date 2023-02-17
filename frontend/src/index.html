@@ -23,9 +23,11 @@
         <div class="flex flex-col gap-4">
           <div class="mb-4 text-center font-serif text-5xl">SKRIBBL</div>
           <div
-            class="flex justify-center rounded-sm bg-gray-100/70 p-4 text-5xl tracking-tighter shadow-sm backdrop-blur"
+            class="flex justify-between rounded-sm bg-gray-100/70 p-4 text-5xl tracking-tighter shadow-sm backdrop-blur"
           >
+            <p></p>
             <div>n _ b _ q _ _ _</div>
+            <p class="text-2xl border-2 border-black p-3 text-center rounded-full" id="timer">123</p>
           </div>
           <div class="flex gap-4">
             <scribbl-leaderboard></scribbl-leaderboard>
@@ -33,6 +35,7 @@
               <div
                 class="relative z-20 h-[488px] w-[512px] rounded-sm bg-gray-100/70 shadow-2xl backdrop-blur"
               >
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-auto text-2xl" id="room-start-btn"hidden>START</button>
                 <canvas id="board"> </canvas>
               </div>
             </div>

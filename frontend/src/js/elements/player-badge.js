@@ -5,7 +5,7 @@ export default class PlayerBadge extends BaseElement {
   init({ username, points, rank, isdrawing }) {
     this.innerHTML = html`
       <div
-        class="${isdrawing &&
+        class="${isdrawing == 'true' &&
         "flex-row-reverse"} flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur"
       >
         <div class="relative">
@@ -13,7 +13,7 @@ export default class PlayerBadge extends BaseElement {
             class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
             src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9"
           />
-          ${isdrawing &&
+          ${isdrawing == 'true' &&
           html`
             <div class="absolute -right-3 -bottom-3 animate-wiggle text-2xl">
               <img
@@ -30,6 +30,14 @@ export default class PlayerBadge extends BaseElement {
         <div class="w-12 text-2xl font-bold">#${rank}</div>
       </div>
     `;
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.init(this.getAttributesProps());
+  }
+
+  static get observedAttributes() {
+    return ["isdrawing"]
   }
 }
 

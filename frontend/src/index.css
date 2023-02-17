@@ -10,3 +10,11 @@
     rgba(0, 0, 0, 1)
   );
 }
+
+#room-start-btn {
+  margin-top: 40%;
+}
+
+#timer {
+  min-width: 2.5em;
+}
