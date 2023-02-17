@@ -18,3 +18,7 @@
 #timer {
   min-width: 2.5em;
 }
+
+#word-placeholder {
+  white-space: pre;
+}

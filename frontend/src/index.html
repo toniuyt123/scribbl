@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Skribbl</title>
     <!--link rel="stylesheet" href="../build/index.css"-->
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="http://192.168.0.106:3000/socket.io/socket.io.js"></script>
     <!--script type="module" src="js/main.js"></script-->
   </head>
   <body>
@@ -26,7 +26,7 @@
             class="flex justify-between rounded-sm bg-gray-100/70 p-4 text-5xl tracking-tighter shadow-sm backdrop-blur"
           >
             <p></p>
-            <div>n _ b _ q _ _ _</div>
+            <div id="word-placeholder">Waiting for owner to start...</div>
             <p class="text-2xl border-2 border-black p-3 text-center rounded-full" id="timer">123</p>
           </div>
           <div class="flex gap-4">

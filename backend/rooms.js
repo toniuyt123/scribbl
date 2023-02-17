@@ -2,7 +2,13 @@ const { WORD_LIST } = require('./config.js');
 
 /*
     <id>: {
-        users: [],
+        users: [{
+            username: params.username,
+            points: 0,
+            rank: 1,
+            isDrawing: false,
+            socketId: params.socketId,
+        }],
         round:,
         drawingUser:,
         word:,
@@ -15,28 +21,37 @@ const onRoomTurn = { callbacks: [] };
 
 function moveRoomTurn(roomId) {
     //new round
-    if (roomsInfo[roomId].drawingUser != -1) {
-        roomsInfo[roomId].users[roomsInfo[roomId].drawingUser].isDrawing = false;
+    const room = roomsInfo[roomId];
+
+    if (room.drawingUser != -1) {
+        room.users[room.drawingUser].isDrawing = false;
     }
 
-    if (roomsInfo[roomId].drawingUser === roomsInfo[roomId].users.length - 1) {
-        roomsInfo[roomId].round++;
-        roomsInfo[roomId].drawingUser = 0;
+    if (room.drawingUser === room.users.length - 1) {
+        room.round++;
+        room.drawingUser = 0;
     } else {
-        roomsInfo[roomId].drawingUser++;
+        room.drawingUser++;
     }
 
-    if (roomsInfo.round > roomsInfo[roomId].totalRounds) {
+    if (room.round > room.totalRounds) {
         //finishRoom
         return false;
     }
 
-    roomsInfo[roomId].users[roomsInfo[roomId].drawingUser].isDrawing = true;
-    roomsInfo[roomId].word = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
+    //console.log('New drawing user is ', room.drawingUser , ' for round ', room.round);
+    room.users[room.drawingUser].isDrawing = true;
+    room.word = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
+
+    for (const user of room.users) {
+        user.guessed = false;
+    }
 
     for (const cb of onRoomTurn.callbacks) {
         cb(roomId);
     }
+
+    return true;
 }
 
 function createRoom(params) {
@@ -52,13 +67,14 @@ function createRoom(params) {
         drawingUser: -1,
         word: '',
         totalRounds: params.totalRounds || 3,
-        turnTime: params.turnTime || 15 * 1000,
+        turnTime: params.turnTime || 120 * 1000,
     };
 }
 
 function startRoom(roomId) {
     const interval = setInterval(() => {
         if(! moveRoomTurn(roomId)) {
+            console.log('clearing ');
             clearInterval(interval);
         }
     }, roomsInfo[roomId].turnTime);
@@ -84,10 +100,19 @@ function addRoomTurnCallback(cb) {
     onRoomTurn.callbacks.push(cb);
 }
 
+function getUserInfo(roomId, socketId) {
+    for (const user of roomsInfo[roomId].users) {
+        if (user.socketId == socketId) {
+            return user;
+        }
+    }
+}
+
 module.exports = {
     roomsInfo,
     startRoom,
     createRoom,
     addUserToRoom,
-    addRoomTurnCallback
+    addRoomTurnCallback,
+    getUserInfo
 };

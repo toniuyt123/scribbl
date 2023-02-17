@@ -1,9 +1,6 @@
-const config = {
-    url: 'http://localhost:3000/',
-    emitDelay: 10,
-};
+import { config } from './config.js';
 
-export const socket = io.connect(config.url, { transports : ['websocket'] });
+export const socket = io.connect(config.appUrl, { transports : ['websocket'] });
 
 // function init() {
     
@@ -18,7 +15,7 @@ export function canDraw() {
 }
 
 socket.emit('join', { roomId }, async (res) => {
-    roomInfo = await (await fetch(`http://localhost:3000/rooms/${roomId}`)).json();
+    roomInfo = await (await fetch(`${config.appUrl}/rooms/${roomId}`)).json();
     
     console.log(roomInfo);
     if (roomInfo.users[0].socketId === socket.id) {
@@ -41,6 +38,8 @@ socket.on('turnUpdate', (data) => {
 
 let timerInterval;
 function updateFrontend() {
+    document.getElementById('chat-input').disabled = canDraw();
+
     const canvas = document.getElementById('board');
     const context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -48,6 +47,10 @@ function updateFrontend() {
     document.querySelector('player-badge[isdrawing=true]')?.setAttribute('isdrawing', false);
     console.log(roomInfo.drawingUser, document.querySelectorAll('player-badge'), document.querySelectorAll('player-badge')[roomInfo.drawingUser]);
     document.querySelectorAll('player-badge')[roomInfo.drawingUser].setAttribute('isdrawing', true);
+
+    const wordPlaceholder = document.getElementById('word-placeholder');
+    //TODO: hide room on server
+    wordPlaceholder.innerHTML = canDraw() ? roomInfo.word : roomInfo.word.replaceAll(/\w/g, '_ ');
 
     clearInterval(timerInterval);
     const timer = document.getElementById('timer');

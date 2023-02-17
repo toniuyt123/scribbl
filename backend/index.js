@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 //io.set('log level', 1);
 
 
-const { addRoomTurnCallback, addUserToRoom, startRoom, roomsInfo } = require('./rooms.js');
+const { addRoomTurnCallback, addUserToRoom, startRoom, roomsInfo, getUserInfo } = require('./rooms.js');
 
 app.get('/users/:roomId', (req, res) => {
     if (roomsInfo[req.params.roomId] == undefined) {
@@ -31,7 +31,7 @@ app.get('/rooms/:roomId', (req, res) => {
         return res.send({});
     }
 
-    console.log(roomsInfo[req.params.roomId])
+    //console.log(roomsInfo[req.params.roomId])
     return res.send(roomsInfo[req.params.roomId]);
 });
 
@@ -46,6 +46,8 @@ function userRoom(id) {
 }
 
 io.on('connection', (socket) => {
+    console.log('conenction ', socket.id);
+
     socket.on('join', (data, callback) => {
         if (data.roomId == undefined) {
             // const roomId = (new Date()).getTime();
@@ -82,6 +84,23 @@ io.on('connection', (socket) => {
     });
 
     socket.on('msg', (data) => {
+        const correctWord = roomsInfo[userRoom(socket.id)].word;
+        const user = getUserInfo(userRoom(socket.id), socket.id);
+
+        if (user.guessed) {
+            //send to hidden chat
+            return;
+        }
+
+        if (data.content == correctWord) {
+            user.points += 100;
+            user.guessed = true;
+
+            socket.to(userRoom(socket.id)).emit('guessed', user);
+            
+            return;
+        }
+
         //console.log(userRoom(socket.id));
         //console.log(sids, rooms, socket.id)
         socket.to(userRoom(socket.id)).emit('msg', data);

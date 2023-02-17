@@ -11,6 +11,7 @@ export class Chat extends BaseElement {
           <div class="messages-container flex w-full flex-col gap-2"></div>
           <input
             class="text-md rounded-sm bg-gray-100/70 p-4 shadow-md backdrop-blur placeholder:text-gray-500 focus:outline-none"
+            id="chat-input"
             placeholder="Type your guess here..."
           />
         </div>
@@ -34,6 +35,13 @@ export class Chat extends BaseElement {
         type: 'left'
       });
     });
+
+    io.socket.on('guessed', (data) => {
+      this.addMessage({
+        username: data.username,
+        type: "guessed",
+      });
+    });
   }
 
   addMessage(messageData) {
@@ -44,6 +52,10 @@ export class Chat extends BaseElement {
 
   connectedCallback() {
     this.querySelector("input").addEventListener("keydown", (e) => {
+      if (io.canDraw()) {
+        return;
+      }
+
       if (e.key === "Enter" && e.target.value) {
         const message = e.target.value;
         e.target.value = "";

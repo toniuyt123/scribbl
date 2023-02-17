@@ -37,7 +37,7 @@ export default class PlayerBadge extends BaseElement {
   }
 
   static get observedAttributes() {
-    return ["isdrawing"]
+    return ["isdrawing", "points"]
   }
 }
 

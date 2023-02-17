@@ -1,10 +1,6 @@
 import '../index.css';
 import { socket, canDraw } from './socket.js';
-
-const config = {
-    url: 'http://localhost:3000/',
-    emitDelay: 10,
-};
+import { config } from './config.js';
 
 export function init() {
     const canvas = document.getElementById('board');

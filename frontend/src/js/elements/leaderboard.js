@@ -2,6 +2,7 @@ import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 import "./player-badge";
 import * as io from "../socket.js";
+import { config } from '../config.js';
 
 export default class Leaderboard extends BaseElement {
   init() {
@@ -25,7 +26,7 @@ export default class Leaderboard extends BaseElement {
   async connectedCallback() {
     //TODO: remove hardcode
     console.log('test');
-    const players = await (await fetch(`http://localhost:3000/users/${io.roomId}`)).json();
+    const players = await (await fetch(`${config.appUrl}/users/${io.roomId}`)).json();
     console.log(players);
 
     this.querySelector(".players-container").innerHTML = html`
@@ -45,6 +46,13 @@ export default class Leaderboard extends BaseElement {
 
     io.socket.on('leave', (data) => {
       this.querySelector(`.players-container player-badge[username="${data.username}"]`).remove();
+    });
+
+    io.socket.on('guessed', (data) => {
+      const player = this.querySelector(`.players-container player-badge[username="${data.username}"]`);
+
+      player.style.color = 'green';
+      player.setAttribute('points', data.points);
     });
   }
 }
