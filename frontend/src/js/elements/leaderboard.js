@@ -2,7 +2,8 @@ import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 import "./player-badge";
 import * as io from "../socket.js";
-import { config } from '../config.js';
+import { config } from "../config.js";
+import { getCurrentRoom } from "./room";
 
 export default class Leaderboard extends BaseElement {
   init() {
@@ -25,34 +26,41 @@ export default class Leaderboard extends BaseElement {
 
   async connectedCallback() {
     //TODO: remove hardcode
-    console.log('test');
-    const players = await (await fetch(`${config.appUrl}/users/${io.roomId}`)).json();
+    console.log("test");
+    const players = await (
+      await fetch(
+        `${config.appUrl}/users/${getCurrentRoom().getAttribute("id")}`
+      )
+    ).json();
     console.log(players);
 
     this.querySelector(".players-container").innerHTML = html`
-      ${players.map(
-        (player) => this.makePlayerBadge(player)
-      )}
+      ${players.map((player) => this.makePlayerBadge(player))}
     `;
 
-    io.socket.on('joined', (data) => {
-      this.querySelector(`.players-container`).innerHTML += (this.makePlayerBadge({
-        username: data.username,
-        points: 0,
-        isDrawing: false,
-        rank: 0 //TODO
-      }));
+    io.socket.on("joined", (data) => {
+      this.querySelector(`.players-container`).innerHTML +=
+        this.makePlayerBadge({
+          username: data.username,
+          points: 0,
+          isDrawing: false,
+          rank: 0, //TODO
+        });
     });
 
-    io.socket.on('leave', (data) => {
-      this.querySelector(`.players-container player-badge[username="${data.username}"]`).remove();
+    io.socket.on("leave", (data) => {
+      this.querySelector(
+        `.players-container player-badge[username="${data.username}"]`
+      ).remove();
     });
 
-    io.socket.on('guessed', (data) => {
-      const player = this.querySelector(`.players-container player-badge[username="${data.username}"]`);
+    io.socket.on("guessed", (data) => {
+      const player = this.querySelector(
+        `.players-container player-badge[username="${data.username}"]`
+      );
 
-      player.style.color = 'green';
-      player.setAttribute('points', data.points);
+      player.style.color = "green";
+      player.setAttribute("points", data.points);
     });
   }
 }

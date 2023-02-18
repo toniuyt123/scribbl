@@ -2,6 +2,7 @@ import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 import Message from "./message";
 import * as io from "../socket.js";
+import { getCurrentRoom } from "./room";
 
 export class Chat extends BaseElement {
   init() {
@@ -18,26 +19,26 @@ export class Chat extends BaseElement {
       </div>
     `;
 
-    io.socket.on('msg', (msgData) => {
+    io.socket.on("msg", (msgData) => {
       console.log(msgData);
       this.addMessage(msgData);
     });
 
-    io.socket.on('joined', (data) => {
+    io.socket.on("joined", (data) => {
       this.addMessage({
         username: data.username,
-        type: 'joined'
+        type: "joined",
       });
     });
 
-    io.socket.on('leave', (data) => {
+    io.socket.on("leave", (data) => {
       this.addMessage({
         username: data.username,
-        type: 'left'
+        type: "left",
       });
     });
 
-    io.socket.on('guessed', (data) => {
+    io.socket.on("guessed", (data) => {
       this.addMessage({
         username: data.username,
         type: "guessed",
@@ -53,7 +54,7 @@ export class Chat extends BaseElement {
 
   connectedCallback() {
     this.querySelector("input").addEventListener("keydown", (e) => {
-      if (io.canDraw()) {
+      if (getCurrentRoom().canDraw()) {
         return;
       }
 
@@ -61,7 +62,7 @@ export class Chat extends BaseElement {
         const message = e.target.value;
         e.target.value = "";
         console.log("Message sent:", message);
-        
+
         const msgData = {
           username: "Player 2",
           content: message,

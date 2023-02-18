@@ -1,99 +1,124 @@
-import '../index.css';
-import { socket, canDraw } from './socket.js';
-import { config } from './config.js';
+import "../index.css";
+import { socket, canDraw } from "./socket.js";
+import { config } from "./config.js";
+import { getCurrentRoom } from "./elements/room";
 
 export function init() {
-    const canvas = document.getElementById('board');
-    const ctx = canvas.getContext('2d');
+  console.log("init called");
+  const canvas = document.getElementById("board");
+  const ctx = canvas.getContext("2d");
 
-    
-    const id = Math.round(Date.now()*Math.random());
-    let isDrawing = false;
-    let prevX, prevY;
-    let drawColor = 'Black';
+  const id = Math.round(Date.now() * Math.random());
+  let isDrawing = false;
+  let prevX, prevY;
+  let drawColor = "Black";
 
-    canvas.width = canvas.parentNode.clientWidth;
-    canvas.height = canvas.parentNode.clientHeight; 
+  canvas.width = canvas.parentNode.clientWidth;
+  canvas.height = canvas.parentNode.clientHeight;
 
-    function toCanvasCoords(x, y) {
-        const offsets = canvas.getBoundingClientRect();
-        return [x-offsets.left, y-offsets.top];
+  function toCanvasCoords(x, y) {
+    const offsets = canvas.getBoundingClientRect();
+    return [x - offsets.left, y - offsets.top];
+  }
+
+  function drawLine(from, to, color) {
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.strokeStyle = color || drawColor;
+    ctx.stroke();
+  }
+
+  const clients = {};
+
+  function drawData(data) {
+    let prevData = clients[data.id];
+
+    if (prevData === undefined) {
+      clients[data.id] = data;
+      prevData = data;
     }
-    
-    function drawLine(from, to, color) {
-        ctx.moveTo(from.x, from.y);
-        ctx.lineTo(to.x, to.y);
-        ctx.strokeStyle = color || drawColor;
-        ctx.stroke();
+
+    if (prevData.drawColor != data.drawColor) {
+      ctx.beginPath();
     }
 
-    const clients = {};
-    socket.on('drawing', (data) => {
-        let prevData = clients[data.id];
+    if (data.drawing) {
+      drawLine(
+        { x: prevData.x, y: prevData.y },
+        { x: data.x, y: data.y },
+        data.drawColor
+      );
+    }
+    clients[data.id] = data;
+  }
 
-        if (prevData === undefined) {
-            clients[data.id] = data;
-            prevData = data;
-        }
+  socket.on("initial_drawing", (datas) => {
+    for (const data of datas) {
+      drawData(data);
+    }
+  });
+  socket.on("drawing", drawData);
 
-        if (prevData.drawColor != data.drawColor) {
-            ctx.beginPath();
-        }
+  let lastEmit = Date.now();
+  canvas.onmousedown = (e) => {
+    if (!getCurrentRoom().canDraw()) {
+      return;
+    }
 
-        if (data.drawing) {
-            drawLine({ x: prevData.x, y: prevData.y }, { x: data.x, y: data.y }, data.drawColor);
-        }
-        clients[data.id] = data;
+    isDrawing = true;
+    [prevX, prevY] = toCanvasCoords(e.clientX, e.clientY);
+    socket.emit("mousemove", {
+      id,
+      x: prevX,
+      y: prevY,
+      drawColor: drawColor,
+      drawing: false,
     });
+  };
 
-    let lastEmit = Date.now();
-    canvas.onmousedown = (e) => {
-        if (! canDraw()) {
-            return;
-        }
+  canvas.addEventListener("mousemove", (e) => {
+    if (isDrawing && getCurrentRoom().canDraw()) {
+      const [newX, newY] = toCanvasCoords(e.clientX, e.clientY);
 
-        isDrawing = true;
-        [prevX, prevY] = toCanvasCoords(e.clientX, e.clientY);
-        socket.emit('mousemove', { id, x: prevX, y: prevY, drawColor: drawColor, drawing: false });
+      if (Date.now() - lastEmit > config.emitDelay) {
+        socket.emit("mousemove", {
+          id,
+          x: newX,
+          y: newY,
+          drawColor: drawColor,
+          drawing: true,
+        });
+        lastEmit = Date.now();
+      }
+
+      drawLine({ x: prevX, y: prevY }, { x: newX, y: newY });
+      prevX = newX;
+      prevY = newY;
+    }
+  });
+
+  canvas.addEventListener("mouseup", (e) => {
+    if (!getCurrentRoom().canDraw()) {
+      return;
+    }
+
+    isDrawing = false;
+  });
+
+  canvas.addEventListener("mouseleave", () => {
+    if (!getCurrentRoom().canDraw()) {
+      return;
+    }
+
+    isDrawing = false;
+  });
+
+  document.querySelectorAll(".color-pick").forEach((el) => {
+    console.log("pick");
+    el.onclick = () => {
+      console.log(el.getAttribute("color-value"));
+      drawColor = el.getAttribute("color-value");
+      ctx.beginPath();
     };
-
-    canvas.addEventListener('mousemove', (e) => {
-        if (isDrawing && canDraw()) {
-            const [newX, newY] = toCanvasCoords(e.clientX, e.clientY);
-
-            if (Date.now() - lastEmit > config.emitDelay) {
-                socket.emit('mousemove', { id, x: newX, y: newY, drawColor: drawColor, drawing: true });
-                lastEmit = Date.now();
-            }
-
-            drawLine({ x: prevX, y: prevY}, { x: newX, y: newY});
-            prevX = newX;
-            prevY = newY;
-        }
-    });
-
-    canvas.addEventListener('mouseup', (e) => {
-        if (! canDraw()) {
-            return;
-        }
-
-        isDrawing = false;
-    });
-
-    canvas.addEventListener('mouseleave', () =>{
-        if (! canDraw()) {
-            return;
-        }
-        
-        isDrawing = false;
-    });
-
-    document.querySelectorAll('.color-pick').forEach(el => {
-        console.log('pick')
-        el.onclick = () => {
-            console.log(el.getAttribute('color-value'))
-            drawColor = el.getAttribute('color-value');
-            ctx.beginPath();
-        };
-    });
+  });
 }
