@@ -5,15 +5,15 @@ export default class PlayerBadge extends BaseElement {
   init({ username, points, rank, isdrawing }) {
     this.innerHTML = html`
       <div
-        class="${isdrawing == 'true' &&
+        class="${isdrawing == "true" &&
         "flex-row-reverse"} flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur"
       >
         <div class="relative">
           <img
-            class="h-12 w-12 rounded-full object-cover ring ring-gray-50"
-            src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9"
+            class="h-12 w-12 rounded-full object-cover ring-1 ring-gray-50"
+            src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${username}&radius=50"
           />
-          ${isdrawing == 'true' &&
+          ${isdrawing == "true" &&
           html`
             <div class="absolute -right-3 -bottom-3 animate-wiggle text-2xl">
               <img
@@ -37,7 +37,7 @@ export default class PlayerBadge extends BaseElement {
   }
 
   static get observedAttributes() {
-    return ["isdrawing", "points"]
+    return ["isdrawing", "points"];
   }
 }
 

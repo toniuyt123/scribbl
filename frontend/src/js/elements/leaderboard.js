@@ -33,7 +33,9 @@ export default class Leaderboard extends BaseElement {
   render() {
     console.log(this.players);
     this.innerHTML = html`
-      <div class="players-container flex h-fit flex-col gap-2">
+      <div
+        class="players-container flex h-[488px] flex-col gap-2 overflow-auto"
+      >
         ${this.players.map(
           (player) => html`
             <player-badge
