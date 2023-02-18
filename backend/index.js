@@ -70,12 +70,7 @@ io.on("connection", (socket) => {
       username: data.username,
     });
 
-    callback({ status: "ok", roomId: data.roomId });
-
-    io.in(userRoom(socket.id)).emit(
-      "initial_drawing",
-      roomsInfo[userRoom(socket.id)].drawingPath
-    );
+    callback(roomsInfo[userRoom(socket.id)]);
   });
 
   socket.on("mousemove", (data) => {

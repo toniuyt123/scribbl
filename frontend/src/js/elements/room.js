@@ -7,6 +7,41 @@ import * as drawing from "../drawing.js";
 
 export default class Room extends BaseElement {
   init({ id, username }) {
+    const roomId = id;
+
+    socket.emit("join", { roomId, username }, async (roomInfo) => {
+      this.roomInfo = roomInfo;
+      this.render();
+    });
+
+    socket.on("turnUpdate", (data) => {
+      this.roomInfo = data;
+      console.log(this.roomInfo);
+      this.render();
+
+      this.querySelector("scribbl-leaderboard").setPlayers(this.roomInfo.users);
+      const canvas = document.getElementById("board");
+      const context = canvas.getContext("2d");
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.beginPath();
+
+      clearInterval(this.timerInterval);
+      const timer = document.getElementById("timer");
+      timer.innerHTML = this.roomInfo.turnTime / 1000;
+
+      this.timerInterval = setInterval(() => {
+        const newTime = parseInt(timer.innerHTML) - 1;
+        timer.innerHTML = newTime;
+
+        if (newTime === 0) {
+          console.log(clearInterval);
+          clearInterval(timerInterval);
+        }
+      }, 1000);
+    });
+  }
+
+  render() {
     this.innerHTML = html`
       <div class="flex flex-col gap-4">
         <div class="mb-4 text-center font-serif text-5xl">SKRIBBL</div>
@@ -29,7 +64,9 @@ export default class Room extends BaseElement {
               <i class="fa-solid fa-copy"></i>
             </button>
           </div>
-          <div id="word-placeholder">Waiting for owner to start...</div>
+          <!-- prettier-ignore -->
+          <div id="word-placeholder">${this.roomInfo.word ||
+          "Waiting for owner to start..."}</div>
           <p
             class="rounded-full border-2 border-black p-3 text-center text-2xl"
             id="timer"
@@ -41,19 +78,24 @@ export default class Room extends BaseElement {
           <scribbl-leaderboard></scribbl-leaderboard>
           <div class="flex h-fit flex-col">
             <div
-              class="relative z-20 h-[488px] w-[512px] rounded-sm bg-gray-100/70 shadow-2xl backdrop-blur"
+              class="relative z-20 h-[488px] w-[512px] items-center rounded-sm bg-gray-100/70 shadow-2xl backdrop-blur"
             >
-              <button
-                class="mx-auto rounded bg-blue-500 py-2 px-4 text-2xl font-bold text-white hover:bg-blue-700"
-                id="room-start-btn"
-                hidden
-              >
-                START
-              </button>
+              ${this.roomInfo.users[0].socketId === socket.id &&
+              !this.roomInfo.word &&
+              html`
+                <button
+                  class="absolute inset-0 m-auto h-16 w-32 rounded bg-blue-500 py-2 px-4 text-2xl font-bold text-white hover:bg-blue-700"
+                  id="room-start-btn"
+                >
+                  START
+                </button>
+              `}
               <canvas id="board"> </canvas>
               <div
                 id="drawing-tools"
-                class="ml-5 flex hidden flex-row space-x-2"
+                class="${this.canDraw()
+                  ? "flex"
+                  : "hidden"} ml-5 flex-row space-x-2"
               >
                 <div
                   class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-black drop-shadow-lg"
@@ -86,74 +128,19 @@ export default class Room extends BaseElement {
               </div>
             </div>
           </div>
-          <scribbl-chat username=${username}></scribbl-chat>
+          <scribbl-chat
+            username="${this.props.username}"
+            canchat="${this.canDraw()}"
+          ></scribbl-chat>
         </div>
       </div>
     `;
 
-    drawing.init(); // TODO move this to the drawing element
-
-    const roomId = id;
-
-    socket.emit("join", { roomId, username }, async (res) => {
-      // roomId = res.roomId;
-      this.roomInfo = await (
-        await fetch(`${config.appUrl}/rooms/${roomId}`)
-      ).json();
-
-      console.log(this.roomInfo);
-      if (this.roomInfo.users[0].socketId === socket.id) {
-        console.log("tttt");
-        const startBtn = document.getElementById("room-start-btn");
-        startBtn.style.display = "block";
-
-        startBtn.onclick = () => {
-          socket.emit("startRoom", {});
-          startBtn.style.display = "none";
-        };
-      }
+    this.querySelector("#room-start-btn")?.addEventListener("click", () => {
+      socket.emit("startRoom");
     });
 
-    socket.on("turnUpdate", (data) => {
-      this.roomInfo = data;
-      console.log(this.roomInfo);
-      updateFrontend();
-    });
-
-    let timerInterval;
-    const updateFrontend = () => {
-      document.getElementById("chat-input").disabled = this.canDraw();
-      document.getElementById("drawing-tools").style.display = this.canDraw()
-        ? "flex"
-        : "none";
-
-      const canvas = document.getElementById("board");
-      const context = canvas.getContext("2d");
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.beginPath();
-
-      this.querySelector("scribbl-leaderboard").setPlayers(this.roomInfo.users);
-
-      const wordPlaceholder = document.getElementById("word-placeholder");
-      //TODO: hide room on server
-      wordPlaceholder.innerHTML = this.canDraw()
-        ? this.roomInfo.word
-        : this.roomInfo.word.replaceAll(/\w/g, "_ ");
-
-      clearInterval(timerInterval);
-      const timer = document.getElementById("timer");
-      timer.innerHTML = this.roomInfo.turnTime / 1000;
-
-      timerInterval = setInterval(() => {
-        const newTime = parseInt(timer.innerHTML) - 1;
-        timer.innerHTML = newTime;
-
-        if (newTime === 0) {
-          console.log(clearInterval);
-          clearInterval(timerInterval);
-        }
-      }, 1000);
-    };
+    drawing.init(this.roomInfo); // TODO move this to the drawing element
   }
 
   canDraw() {

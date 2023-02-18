@@ -31,7 +31,7 @@ export default class Leaderboard extends BaseElement {
   }
 
   render() {
-    console.log(this.players);
+    console.log("leaderboard render", io.socket.id, this.players);
     this.innerHTML = html`
       <div
         class="players-container flex h-[488px] flex-col gap-2 overflow-auto"
@@ -43,6 +43,7 @@ export default class Leaderboard extends BaseElement {
               points="${player.points}"
               rank="${player.rank}"
               isdrawing="${player.isDrawing}"
+              isplayer="${player.socketId === io.socket.id}"
             ></player-badge>
           `
         )}

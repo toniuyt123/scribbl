@@ -2,7 +2,7 @@ import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 
 export default class PlayerBadge extends BaseElement {
-  init({ username, points, rank, isdrawing }) {
+  init({ username, points, rank, isdrawing, isplayer }) {
     this.innerHTML = html`
       <div
         class="${isdrawing == "true" &&
@@ -24,7 +24,9 @@ export default class PlayerBadge extends BaseElement {
           `}
         </div>
         <div class="flex flex-col items-center">
-          <div class="text-xl font-semibold">${username}</div>
+          <div class="${isplayer && "text-blue-500"} text-xl font-semibold">
+            ${username} ${isplayer && "(You)"}
+          </div>
           <div class="text-md">Points: ${points}</div>
         </div>
         <div class="w-12 text-2xl font-bold">#${rank}</div>

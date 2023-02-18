@@ -3,7 +3,7 @@ import { socket, canDraw } from "./socket.js";
 import { config } from "./config.js";
 import { getCurrentRoom } from "./elements/room";
 
-export function init() {
+export function init(roomInfo) {
   console.log("init called");
   const canvas = document.getElementById("board");
   const ctx = canvas.getContext("2d");
@@ -52,11 +52,9 @@ export function init() {
     clients[data.id] = data;
   }
 
-  socket.on("initial_drawing", (datas) => {
-    for (const data of datas) {
-      drawData(data);
-    }
-  });
+  for (const data of roomInfo.drawingPath) {
+    drawData(data);
+  }
   socket.on("drawing", drawData);
 
   let lastEmit = Date.now();

@@ -5,7 +5,8 @@ import * as io from "../socket.js";
 import { getCurrentRoom } from "./room";
 
 export class Chat extends BaseElement {
-  init() {
+  init({ canchat }) {
+    console.log("canchat", this.props);
     this.innerHTML = html`
       <div class="mask-image-fade relative flex h-[488px] w-80">
         <div class="absolute bottom-0 z-10 flex w-full flex-col gap-2">
@@ -13,7 +14,10 @@ export class Chat extends BaseElement {
           <input
             class="text-md rounded-sm bg-gray-100/70 p-4 shadow-md backdrop-blur placeholder:text-gray-500 focus:outline-none"
             id="chat-input"
-            placeholder="Type your guess here..."
+            placeholder="${canchat
+              ? "Type your guess here..."
+              : "Can't give hints!"}"
+            ${canchat || "disabled"}
           />
         </div>
       </div>
@@ -54,10 +58,6 @@ export class Chat extends BaseElement {
 
   connectedCallback() {
     this.querySelector("input").addEventListener("keydown", (e) => {
-      if (getCurrentRoom().canDraw()) {
-        return;
-      }
-
       if (e.key === "Enter" && e.target.value) {
         const message = e.target.value;
         e.target.value = "";
