@@ -36,7 +36,7 @@ function moveRoomTurn(roomId) {
 
   if (room.round > room.totalRounds) {
     //finishRoom
-    return false;
+    return true;
   }
 
   console.log(
@@ -57,7 +57,7 @@ function moveRoomTurn(roomId) {
     cb(roomId);
   }
 
-  return true;
+  return false;
 }
 
 function createRoom(params) {
@@ -126,7 +126,13 @@ function waitForCompleted(roomId) {
 
 async function startRoom(roomId) {
   while (true) {
-    moveRoomTurn(roomId);
+    const gameEnded = moveRoomTurn(roomId);
+
+    if (gameEnded) {
+      const finalInfo = roomsInfo[params.roomId];
+      roomsInfo[params.roomId] = undefined;
+      return finalInfo;
+    }
 
     await Promise.any([
       delay(roomsInfo[roomId].turnTime),

@@ -95,36 +95,72 @@ export default class Room extends BaseElement {
                 id="drawing-tools"
                 class="${this.canDraw()
                   ? "flex"
-                  : "hidden"} ml-5 flex-row space-x-2"
+                  : "hidden"} w-full flex-row justify-between"
               >
-                <div
-                  class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-black drop-shadow-lg"
-                  color-value="black"
-                ></div>
-                <div
-                  class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-green-500 drop-shadow-lg"
-                  color-value="rgb(34 197 94)"
-                ></div>
-                <div
-                  class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-red-600 drop-shadow-lg"
-                  color-value="rgb(220 38 38)"
-                ></div>
-                <div
-                  class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-yellow-300 drop-shadow-lg"
-                  color-value="rgb(253 224 71)"
-                ></div>
-                <div
-                  class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-sky-500 drop-shadow-lg"
-                  color-value="rgb(14 165 233)"
-                ></div>
-                <div
-                  class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-fuchsia-500 drop-shadow-lg"
-                  color-value="rgb(217 70 239)"
-                ></div>
-                <div
-                  class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-white drop-shadow-lg"
-                  color-value="white"
-                ></div>
+                <div class="flex flex-row gap-2 pl-4">
+                  <div
+                    class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-black drop-shadow-lg"
+                    color-value="black"
+                  ></div>
+                  <div
+                    class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-green-500 drop-shadow-lg"
+                    color-value="rgb(34 197 94)"
+                  ></div>
+                  <div
+                    class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-red-600 drop-shadow-lg"
+                    color-value="rgb(220 38 38)"
+                  ></div>
+                  <div
+                    class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-yellow-300 drop-shadow-lg"
+                    color-value="rgb(253 224 71)"
+                  ></div>
+                  <div
+                    class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-sky-500 drop-shadow-lg"
+                    color-value="rgb(14 165 233)"
+                  ></div>
+                  <div
+                    class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-fuchsia-500 drop-shadow-lg"
+                    color-value="rgb(217 70 239)"
+                  ></div>
+                  <div
+                    class="color-pick h-8 w-8 cursor-pointer rounded-full border-4 border-white bg-white drop-shadow-lg"
+                    color-value="white"
+                  ></div>
+                </div>
+                <div class="flex flex-row gap-2 pr-4">
+                  <div
+                    class="size-pick relative h-8 w-8 cursor-pointer rounded-full bg-white drop-shadow-lg"
+                    size-value="2"
+                  >
+                    <div
+                      class="absolute inset-0 m-auto h-[3px] w-[3px] rounded-full bg-black drop-shadow-lg"
+                    ></div>
+                  </div>
+                  <div
+                    class="size-pick relative h-8 w-8 cursor-pointer rounded-full bg-white drop-shadow-lg"
+                    size-value="10"
+                  >
+                    <div
+                      class="absolute inset-0 m-auto h-[10px] w-[10px] rounded-full bg-black drop-shadow-lg"
+                    ></div>
+                  </div>
+                  <div
+                    class="size-pick relative h-8 w-8 cursor-pointer rounded-full bg-white drop-shadow-lg"
+                    size-value="20"
+                  >
+                    <div
+                      class="absolute inset-0 m-auto h-[20px] w-[20px] rounded-full bg-black drop-shadow-lg"
+                    ></div>
+                  </div>
+                  <div
+                    class="size-pick relative h-8 w-8 cursor-pointer rounded-full bg-white drop-shadow-lg"
+                    size-value="30"
+                  >
+                    <div
+                      class="absolute inset-0 m-auto h-[30px] w-[30px] rounded-full bg-black drop-shadow-lg"
+                    ></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

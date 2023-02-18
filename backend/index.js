@@ -112,8 +112,10 @@ io.on("connection", (socket) => {
     io.in(userRoom(socket.id)).emit("msg", data);
   });
 
-  socket.on("startRoom", (data) => {
-    startRoom(userRoom(socket.id));
+  socket.on("startRoom", async (data) => {
+    const finalInfo = await startRoom(userRoom(socket.id));
+
+    io.in(finalInfo.roomId).emit("endRoom", finalInfo);
   });
 
   socket.on("disconnecting", (reason) => {

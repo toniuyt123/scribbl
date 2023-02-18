@@ -12,6 +12,7 @@ export function init(roomInfo) {
   let isDrawing = false;
   let prevX, prevY;
   let drawColor = "Black";
+  let drawSize = 2;
 
   canvas.width = canvas.parentNode.clientWidth;
   canvas.height = canvas.parentNode.clientHeight;
@@ -21,10 +22,12 @@ export function init(roomInfo) {
     return [x - offsets.left, y - offsets.top];
   }
 
-  function drawLine(from, to, color) {
+  function drawLine(from, to) {
     ctx.moveTo(from.x, from.y);
     ctx.lineTo(to.x, to.y);
-    ctx.strokeStyle = color || drawColor;
+    ctx.lineCap = "round";
+    ctx.lineWidth = to.drawSize || drawSize;
+    ctx.strokeStyle = to.drawColor || drawColor;
     ctx.stroke();
   }
 
@@ -42,12 +45,12 @@ export function init(roomInfo) {
       ctx.beginPath();
     }
 
+    if (prevData.drawSize != data.drawSize) {
+      ctx.beginPath();
+    }
+
     if (data.drawing) {
-      drawLine(
-        { x: prevData.x, y: prevData.y },
-        { x: data.x, y: data.y },
-        data.drawColor
-      );
+      drawLine(prevData, data);
     }
     clients[data.id] = data;
   }
@@ -70,6 +73,7 @@ export function init(roomInfo) {
       x: prevX,
       y: prevY,
       drawColor: drawColor,
+      drawSize: drawSize,
       drawing: false,
     });
   };
@@ -84,6 +88,7 @@ export function init(roomInfo) {
           x: newX,
           y: newY,
           drawColor: drawColor,
+          drawSize: drawSize,
           drawing: true,
         });
         lastEmit = Date.now();
@@ -116,6 +121,14 @@ export function init(roomInfo) {
     el.onclick = () => {
       console.log(el.getAttribute("color-value"));
       drawColor = el.getAttribute("color-value");
+      ctx.beginPath();
+    };
+  });
+
+  document.querySelectorAll(".size-pick").forEach((el) => {
+    el.onclick = () => {
+      console.log(el.getAttribute("size-value"));
+      drawSize = el.getAttribute("size-value");
       ctx.beginPath();
     };
   });
