@@ -64,7 +64,7 @@ export class Chat extends BaseElement {
         console.log("Message sent:", message);
 
         const msgData = {
-          username: "Player 2",
+          username: this.props.username,
           content: message,
           type: "message",
         };

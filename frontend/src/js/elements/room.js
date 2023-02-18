@@ -86,7 +86,7 @@ export default class Room extends BaseElement {
               </div>
             </div>
           </div>
-          <scribbl-chat></scribbl-chat>
+          <scribbl-chat username=${username}></scribbl-chat>
         </div>
       </div>
     `;

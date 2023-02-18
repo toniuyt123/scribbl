@@ -2,7 +2,8 @@ export default class BaseElement extends HTMLElement {
   constructor(constructorProps) {
     super();
 
-    this.init(constructorProps || this.getAttributesProps());
+    this.props = constructorProps || this.getAttributesProps();
+    this.init(this.props);
   }
 
   getAttributesProps() {
