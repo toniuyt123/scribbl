@@ -7,60 +7,75 @@ import { getCurrentRoom } from "./room";
 
 export default class Leaderboard extends BaseElement {
   init() {
-    this.innerHTML = `
-        <div class="players-container h-fit flex flex-col gap-2">
-        </div>
-    `;
+    fetch(`${config.appUrl}/users/${getCurrentRoom().getAttribute("id")}`)
+      .then((r) => r.json())
+      .then((players) => this.setPlayers(players));
   }
 
-  makePlayerBadge(player) {
-    return html`
-      <player-badge
-        username="${player.username}"
-        points="${player.points}"
-        rank="${player.rank}"
-        isdrawing="${player.isDrawing}"
-      ></player-badge>
+  setPlayers(players) {
+    console.log(players, "stack:", new Error().stack);
+    [...players]
+      .sort((a, b) => b.points - a.points)
+      .forEach((player, i, arr) => {
+        if (i === 0) {
+          player.rank = 1;
+        } else if (arr[i - 1].points === player.points) {
+          player.rank = arr[i - 1].rank;
+        } else {
+          player.rank = arr[i - 1].rank + 1;
+        }
+      });
+
+    this.players = players;
+    this.render();
+  }
+
+  render() {
+    console.log(this.players);
+    this.innerHTML = html`
+      <div class="players-container flex h-fit flex-col gap-2">
+        ${this.players.map(
+          (player) => html`
+            <player-badge
+              username="${player.username}"
+              points="${player.points}"
+              rank="${player.rank}"
+              isdrawing="${player.isDrawing}"
+            ></player-badge>
+          `
+        )}
+      </div>
     `;
   }
 
   async connectedCallback() {
-    //TODO: remove hardcode
-    console.log("test");
-    const players = await (
-      await fetch(
-        `${config.appUrl}/users/${getCurrentRoom().getAttribute("id")}`
-      )
-    ).json();
-    console.log(players);
-
-    this.querySelector(".players-container").innerHTML = html`
-      ${players.map((player) => this.makePlayerBadge(player))}
-    `;
-
     io.socket.on("joined", (data) => {
-      this.querySelector(`.players-container`).innerHTML +=
-        this.makePlayerBadge({
+      this.setPlayers([
+        ...this.players,
+        {
           username: data.username,
           points: 0,
           isDrawing: false,
-          rank: 0, //TODO
-        });
+        },
+      ]);
     });
 
     io.socket.on("leave", (data) => {
-      this.querySelector(
-        `.players-container player-badge[username="${data.username}"]`
-      ).remove();
+      this.setPlayers(
+        this.players.filter((player) => player.username !== data.username)
+      );
     });
 
     io.socket.on("guessed", (data) => {
-      const player = this.querySelector(
-        `.players-container player-badge[username="${data.username}"]`
+      console.log(data, this.players);
+      this.setPlayers(
+        this.players.map((player) => ({
+          ...player,
+          points:
+            player.username === data.username ? data.points : player.points,
+        }))
       );
-
-      player.style.color = "green";
-      player.setAttribute("points", data.points);
+      console.log(data, this.players);
     });
   }
 }

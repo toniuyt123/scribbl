@@ -132,20 +132,7 @@ export default class Room extends BaseElement {
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.beginPath();
 
-      document
-        .querySelector("player-badge[isdrawing=true]")
-        ?.setAttribute("isdrawing", false);
-      console.log(
-        this.roomInfo.drawingUser,
-        document.querySelectorAll("player-badge"),
-        document.querySelectorAll("player-badge")[this.roomInfo.drawingUser]
-      );
-      document
-        .querySelectorAll("player-badge")
-        [this.roomInfo.drawingUser].setAttribute("isdrawing", true);
-      document.querySelectorAll("player-badge").forEach((el) => {
-        el.style.color = "black";
-      });
+      this.querySelector("scribbl-leaderboard").setPlayers(this.roomInfo.users);
 
       const wordPlaceholder = document.getElementById("word-placeholder");
       //TODO: hide room on server
