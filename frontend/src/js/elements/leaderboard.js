@@ -13,7 +13,7 @@ export default class Leaderboard extends BaseElement {
   }
 
   setPlayers(players) {
-    console.log(players, "stack:", new Error().stack);
+    //console.log(players, "stack:", new Error().stack);
     [...players]
       .sort((a, b) => b.points - a.points)
       .forEach((player, i, arr) => {

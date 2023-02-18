@@ -152,7 +152,19 @@ io.on("connection", (socket) => {
 });
 
 addRoomTurnCallback((roomId) => {
-  io.in(roomId).emit("turnUpdate", roomsInfo[roomId]);
+  const room = roomsInfo[roomId];
+  const word = room.word;
+  const censoredWord = word.replaceAll(/\w/g, '_ ');
+  
+  room.word = censoredWord;
+  
+  const socket = io.of('/').sockets.get(room.users[room.drawingUser].socketId);
+
+  console.log("sending ", room.word, "from", socket.id)
+  socket.to(roomId).emit("turnUpdate", room);
+  room.word = word;
+  console.log(word);
+  io.to(socket.id).emit("turnUpdate", room);
 });
 
 http.listen(port, () => {
