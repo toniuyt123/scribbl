@@ -19,6 +19,7 @@ export class Chat extends BaseElement {
     `;
 
     io.socket.on('msg', (msgData) => {
+      console.log(msgData);
       this.addMessage(msgData);
     });
 

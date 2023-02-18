@@ -50,27 +50,23 @@ io.on('connection', (socket) => {
 
     socket.on('join', (data, callback) => {
         if (data.roomId == undefined) {
-            // const roomId = (new Date()).getTime();
-            // socket.join(roomId);
-            // console.log('Joinned', roomId);
-
-            return;
+            data.roomId = socket.id;
+        } else {
+            socket.join(data.roomId);
+            socket.leave(socket.id);
         }
 
-        
         //ASSERT(rooms[room].length < 8)
-        socket.join(data.roomId);
-        socket.leave(socket.id);
 
         data.username ||= `Player ${rooms.get(data.roomId).size}`;
         data.socketId = socket.id;
         addUserToRoom(data);
 
-        socket.to(userRoom(socket.id)).emit('joined', {
+        io.in(userRoom(socket.id)).emit('joined', {
             username: data.username,
         });
 
-        callback({ status: 'ok' });
+        callback({ status: 'ok', roomId: data.roomId });
     });
 
     socket.on('mousemove', (data) => {
@@ -104,7 +100,8 @@ io.on('connection', (socket) => {
 
         //console.log(userRoom(socket.id));
         //console.log(sids, rooms, socket.id)
-        socket.to(userRoom(socket.id)).emit('msg', data);
+        //console.log(data);
+        io.in(userRoom(socket.id)).emit('msg', data);
     });
 
     socket.on('startRoom', (data) => {

@@ -7,6 +7,7 @@
     <title>Skribbl</title>
     <!--link rel="stylesheet" href="../build/index.css"-->
     <script src="http://192.168.0.106:3000/socket.io/socket.io.js"></script>
+    <script src="https://kit.fontawesome.com/642e031b52.js" crossorigin="anonymous"></script>
     <!--script type="module" src="js/main.js"></script-->
   </head>
   <body>
@@ -25,9 +26,24 @@
           <div
             class="flex justify-between rounded-sm bg-gray-100/70 p-4 text-5xl tracking-tighter shadow-sm backdrop-blur"
           >
-            <p></p>
+            <!-- <p class="text-lg tracking-tight text-left">Invite: <br><span id="invite-link"></span></p> -->
+            <div class="text-xs">
+              <p class=" text-sm tracking-tight">Invite:</p> 
+              <input
+                class="border-blue-500 border-solid border py-1 px-2 max-w-xs rounded-l"
+                type="text"
+                id="invite-link"
+                readonly
+              />
+              <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 border border-blue-700 rounded-r"
+                id="invite-link-btn"
+              >
+                <i class="fa-solid fa-copy"></i>
+              </button>
+            </div>
             <div id="word-placeholder">Waiting for owner to start...</div>
-            <p class="text-2xl border-2 border-black p-3 text-center rounded-full" id="timer">123</p>
+            <p class="text-2xl border-2 border-black p-3 text-center rounded-full" id="timer">*</p>
           </div>
           <div class="flex gap-4">
             <scribbl-leaderboard></scribbl-leaderboard>

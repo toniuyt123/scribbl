@@ -4,7 +4,7 @@ export const socket = io.connect(config.appUrl, { transports : ['websocket'] });
 
 
 const urlParams = new URLSearchParams(window.location.search);
-export const roomId = urlParams.get('roomId');
+export let roomId = urlParams.get('roomId');
 export let roomInfo = {};
 
 export function canDraw() {
@@ -12,6 +12,7 @@ export function canDraw() {
 }
 
 socket.emit('join', { roomId }, async (res) => {
+    roomId = res.roomId;
     roomInfo = await (await fetch(`${config.appUrl}/rooms/${roomId}`)).json();
     
     console.log(roomInfo);
