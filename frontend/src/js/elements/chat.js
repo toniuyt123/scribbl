@@ -74,17 +74,6 @@ export class Chat extends BaseElement {
         io.sendChatMessage(msgData);
       }
     });
-
-    // vmesto toq set interval callbacka trqq da e se podava na socket modula i toi da go vika pri chat event
-    // setInterval(() => {
-    //   this.addMessage({
-    //     username: "Player 1",
-    //     content: Math.random(),
-    //     type: ["message", "drawing", "guessed", "joined", "left"][
-    //       Math.floor(Math.random() * 5)
-    //     ],
-    //   });
-    // }, 1000);
   }
 }
 customElements.define("scribbl-chat", Chat);

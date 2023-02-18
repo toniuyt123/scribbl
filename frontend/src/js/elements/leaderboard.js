@@ -13,7 +13,6 @@ export default class Leaderboard extends BaseElement {
   }
 
   setPlayers(players) {
-    //console.log(players, "stack:", new Error().stack);
     [...players]
       .sort((a, b) => b.points - a.points)
       .forEach((player, i, arr) => {
@@ -31,7 +30,6 @@ export default class Leaderboard extends BaseElement {
   }
 
   render() {
-    console.log("leaderboard render", io.socket.id, this.players);
     this.innerHTML = html`
       <div
         class="players-container flex h-[488px] flex-col gap-2 overflow-auto"
@@ -70,7 +68,6 @@ export default class Leaderboard extends BaseElement {
     });
 
     io.socket.on("guessed", (data) => {
-      console.log(data, this.players);
       this.setPlayers(
         this.players.map((player) => ({
           ...player,
@@ -78,7 +75,6 @@ export default class Leaderboard extends BaseElement {
             player.username === data.username ? data.points : player.points,
         }))
       );
-      console.log(data, this.players);
     });
   }
 }

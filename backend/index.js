@@ -19,6 +19,7 @@ const {
   getUserInfo,
   getRandomPublicRoom,
   createRoom,
+  censorWord,
 } = require("./rooms.js");
 
 app.get("/users/:roomId", (req, res) => {
@@ -26,9 +27,6 @@ app.get("/users/:roomId", (req, res) => {
     return res.send([]);
   }
 
-  //const resArr = Object.keys(roomsInfo[req.params.roomId].users).map(key => { return roomsInfo[req.params.roomId].users[key] });
-  //console.log(res);
-  //console.log(roomsInfo[req.params.roomId] || [])
   return res.send(roomsInfo[req.params.roomId].users);
 });
 
@@ -37,7 +35,6 @@ app.get("/rooms/:roomId", (req, res) => {
     return res.send({});
   }
 
-  //console.log(roomsInfo[req.params.roomId])
   return res.send(roomsInfo[req.params.roomId]);
 });
 
@@ -47,7 +44,7 @@ const rooms = io.of("/").adapter.rooms;
 const sids = io.of("/").adapter.sids;
 
 function userRoom(id) {
-  return Array.from(sids.get(id))[0];
+  return Array.from(sids.get(id))[1];
 }
 
 io.on("connection", (socket) => {
@@ -58,7 +55,6 @@ io.on("connection", (socket) => {
       data.roomId = socket.id;
     } else {
       socket.join(data.roomId);
-      socket.leave(socket.id);
     }
 
     //ASSERT(rooms[room].length < 8)
@@ -70,7 +66,10 @@ io.on("connection", (socket) => {
       username: data.username,
     });
 
+    const word = roomsInfo[userRoom(socket.id)].word;
+    roomsInfo[userRoom(socket.id)].word = censorWord(word);
     callback(roomsInfo[userRoom(socket.id)]);
+    roomsInfo[userRoom(socket.id)].word = word;
   });
 
   socket.on("mousemove", (data) => {
@@ -79,7 +78,6 @@ io.on("connection", (socket) => {
     if (room.users[room.drawingUser].socketId !== socket.id) {
       return;
     }
-    //console.log(sids, socket.id);
 
     room.drawingPath.push(data);
 
@@ -100,15 +98,12 @@ io.on("connection", (socket) => {
         100 / (roomsInfo[userRoom(socket.id)].guessedUsers.length + 1);
       user.guessed = true;
 
-      socket.to(userRoom(socket.id)).emit("guessed", user);
+      io.in(userRoom(socket.id)).emit("guessed", user);
       roomsInfo[userRoom(socket.id)].guessedUsers.push(socket.id);
 
       return;
     }
 
-    //console.log(userRoom(socket.id));
-    //console.log(sids, rooms, socket.id)
-    //console.log(data);
     io.in(userRoom(socket.id)).emit("msg", data);
   });
 
@@ -117,7 +112,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnecting", (reason) => {
-    //console.log(roomsInfo, userRoom(socket.id))
     if (roomsInfo[userRoom(socket.id)] == undefined) {
       return;
     }
@@ -125,7 +119,6 @@ io.on("connection", (socket) => {
     let leavingUser;
     let leavingUserIdx = 0;
     for (const user of roomsInfo[userRoom(socket.id)].users) {
-      //console.log(user, socket.id)
       if (user.socketId == socket.id) {
         leavingUser = user;
         break;
@@ -138,7 +131,6 @@ io.on("connection", (socket) => {
     });
 
     roomsInfo[userRoom(socket.id)].users.splice(leavingUserIdx, 1);
-    //delete roomsInfo[userRoom(socket.id)].users[socket.id];
   });
 
   socket.on("getRandomPublicRoom", (data, callback) => {
@@ -154,16 +146,13 @@ io.on("connection", (socket) => {
 addRoomTurnCallback((roomId) => {
   const room = roomsInfo[roomId];
   const word = room.word;
-  const censoredWord = word.replaceAll(/\w/g, '_ ');
   
-  room.word = censoredWord;
+  room.word = censorWord(word);
   
   const socket = io.of('/').sockets.get(room.users[room.drawingUser].socketId);
 
-  console.log("sending ", room.word, "from", socket.id)
   socket.to(roomId).emit("turnUpdate", room);
   room.word = word;
-  console.log(word);
   io.to(socket.id).emit("turnUpdate", room);
 });
 

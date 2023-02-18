@@ -16,7 +16,6 @@ export default class Room extends BaseElement {
 
     socket.on("turnUpdate", (data) => {
       this.roomInfo = data;
-      console.log(this.roomInfo);
       this.render();
 
       this.querySelector("scribbl-leaderboard").setPlayers(this.roomInfo.users);
@@ -130,7 +129,7 @@ export default class Room extends BaseElement {
           </div>
           <scribbl-chat
             username="${this.props.username}"
-            canchat="${this.canDraw()}"
+            canchat="${!this.canDraw()}"
           ></scribbl-chat>
         </div>
       </div>

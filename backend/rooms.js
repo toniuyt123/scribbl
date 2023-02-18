@@ -134,12 +134,6 @@ async function startRoom(roomId) {
     ]);
   }
 
-  // const interval = setInterval(() => {
-  //     if(! moveRoomTurn(roomId)) {
-  //         console.log('clearing ');
-  //         clearInterval(interval);
-  //     }
-  // }, roomsInfo[roomId].turnTime);
 }
 
 function addUserToRoom(params) {
@@ -147,7 +141,6 @@ function addUserToRoom(params) {
     createRoom(params);
   }
 
-  //roomsInfo[params.roomId] ||= { users: {}, round: 0, word: '' };
   if (!params.username) {
     const randomWord = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
     params.username = randomWord[0].toUpperCase() + randomWord.slice(1);
@@ -174,6 +167,10 @@ function getUserInfo(roomId, socketId) {
   }
 }
 
+function censorWord(word) {
+  return word.replaceAll(/\w/g, '_ ');
+}
+
 module.exports = {
   roomsInfo,
   startRoom,
@@ -182,4 +179,5 @@ module.exports = {
   addRoomTurnCallback,
   getUserInfo,
   getRandomPublicRoom,
+  censorWord,
 };
