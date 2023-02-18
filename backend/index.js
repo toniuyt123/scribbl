@@ -93,10 +93,11 @@ io.on('connection', (socket) => {
         }
 
         if (data.content == correctWord) {
-            user.points += 100;
+            user.points += 100 / (roomsInfo[userRoom(socket.id)].guessedUsers.length + 1);
             user.guessed = true;
 
             socket.to(userRoom(socket.id)).emit('guessed', user);
+            roomsInfo[userRoom(socket.id)].guessedUsers.push(socket.id);
             
             return;
         }

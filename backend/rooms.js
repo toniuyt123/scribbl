@@ -23,11 +23,11 @@ function moveRoomTurn(roomId) {
     //new round
     const room = roomsInfo[roomId];
 
-    if (room.drawingUser != -1) {
+    if (room.drawingUser != -1 && room.drawingUser < room.users.length) {
         room.users[room.drawingUser].isDrawing = false;
     }
 
-    if (room.drawingUser === room.users.length - 1) {
+    if (room.drawingUser >= room.users.length - 1) {
         room.round++;
         room.drawingUser = 0;
     } else {
@@ -39,8 +39,9 @@ function moveRoomTurn(roomId) {
         return false;
     }
 
-    //console.log('New drawing user is ', room.drawingUser , ' for round ', room.round);
+    console.log('New drawing user is ', room.drawingUser , ' for users length ', room.users.length);
     room.users[room.drawingUser].isDrawing = true;
+    room.guessedUsers = [];
     room.word = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
 
     for (const user of room.users) {
@@ -63,6 +64,7 @@ function createRoom(params) {
 
     roomsInfo[params.roomId] = {
         users: [],
+        guessedUsers: [],
         round: 0,
         drawingUser: -1,
         word: '',
@@ -71,14 +73,40 @@ function createRoom(params) {
     };
 }
 
-function startRoom(roomId) {
-    const interval = setInterval(() => {
-        if(! moveRoomTurn(roomId)) {
-            console.log('clearing ');
-            clearInterval(interval);
-        }
-    }, roomsInfo[roomId].turnTime);
-    moveRoomTurn(roomId);
+function delay(ms) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => resolve(), ms);
+    });
+}
+
+function waitForCompleted(roomId) {
+    const room = roomsInfo[roomId];
+
+    return new Promise((resolve, reject) => {
+        setInterval(() => {
+            if (room.guessedUsers.length === room.users.length - 1) {
+                resolve(); // all users have guessed
+            } else if (room.drawingUser >= room.users.length || ! room.users[room.drawingUser].isDrawing) {
+                resolve(); // user left
+            }
+
+        }, 100);
+    });
+}
+
+async function startRoom(roomId) {
+    while (true) {
+        moveRoomTurn(roomId);
+
+        await Promise.any([delay(roomsInfo[roomId].turnTime), waitForCompleted(roomId)]);
+    }
+
+    // const interval = setInterval(() => {
+    //     if(! moveRoomTurn(roomId)) {
+    //         console.log('clearing ');
+    //         clearInterval(interval);
+    //     }
+    // }, roomsInfo[roomId].turnTime);
 }
 
 function addUserToRoom(params) {

@@ -43,10 +43,12 @@ function updateFrontend() {
     const canvas = document.getElementById('board');
     const context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
+    context.beginPath();
 
     document.querySelector('player-badge[isdrawing=true]')?.setAttribute('isdrawing', false);
     console.log(roomInfo.drawingUser, document.querySelectorAll('player-badge'), document.querySelectorAll('player-badge')[roomInfo.drawingUser]);
     document.querySelectorAll('player-badge')[roomInfo.drawingUser].setAttribute('isdrawing', true);
+    document.querySelectorAll('player-badge').forEach(el => { el.style.color = 'black'; });
 
     const wordPlaceholder = document.getElementById('word-placeholder');
     //TODO: hide room on server

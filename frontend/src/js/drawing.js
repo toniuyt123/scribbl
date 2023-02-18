@@ -35,6 +35,7 @@ export function init() {
         }
 
         if (data.drawing) {
+            console.log(clients);
             drawLine({ x: prevData.x, y: prevData.y }, { x: data.x, y: data.y });
         }
         clients[data.id] = data;
