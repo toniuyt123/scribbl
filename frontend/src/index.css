@@ -22,3 +22,8 @@
 #word-placeholder {
   white-space: pre;
 }
+
+#drawing-tools {
+  position: absolute;
+  bottom: 3%;
+}

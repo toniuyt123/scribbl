@@ -10,6 +10,7 @@ export function init() {
     const id = Math.round(Date.now()*Math.random());
     let isDrawing = false;
     let prevX, prevY;
+    let drawColor = 'Black';
 
     canvas.width = canvas.parentNode.clientWidth;
     canvas.height = canvas.parentNode.clientHeight; 
@@ -19,9 +20,10 @@ export function init() {
         return [x-offsets.left, y-offsets.top];
     }
     
-    function drawLine(from, to) {
+    function drawLine(from, to, color) {
         ctx.moveTo(from.x, from.y);
         ctx.lineTo(to.x, to.y);
+        ctx.strokeStyle = color || drawColor;
         ctx.stroke();
     }
 
@@ -34,9 +36,12 @@ export function init() {
             prevData = data;
         }
 
+        if (prevData.drawColor != data.drawColor) {
+            ctx.beginPath();
+        }
+
         if (data.drawing) {
-            console.log(clients);
-            drawLine({ x: prevData.x, y: prevData.y }, { x: data.x, y: data.y });
+            drawLine({ x: prevData.x, y: prevData.y }, { x: data.x, y: data.y }, data.drawColor);
         }
         clients[data.id] = data;
     });
@@ -49,7 +54,7 @@ export function init() {
 
         isDrawing = true;
         [prevX, prevY] = toCanvasCoords(e.clientX, e.clientY);
-        socket.emit('mousemove', { id, x: prevX, y: prevY, drawing: false });
+        socket.emit('mousemove', { id, x: prevX, y: prevY, drawColor: drawColor, drawing: false });
     };
 
     canvas.addEventListener('mousemove', (e) => {
@@ -57,7 +62,7 @@ export function init() {
             const [newX, newY] = toCanvasCoords(e.clientX, e.clientY);
 
             if (Date.now() - lastEmit > config.emitDelay) {
-                socket.emit('mousemove', { id, x: newX, y: newY, drawing: true });
+                socket.emit('mousemove', { id, x: newX, y: newY, drawColor: drawColor, drawing: true });
                 lastEmit = Date.now();
             }
 
@@ -81,5 +86,14 @@ export function init() {
         }
         
         isDrawing = false;
+    });
+
+    document.querySelectorAll('.color-pick').forEach(el => {
+        console.log('pick')
+        el.onclick = () => {
+            console.log(el.getAttribute('color-value'))
+            drawColor = el.getAttribute('color-value');
+            ctx.beginPath();
+        };
     });
 }

@@ -2,14 +2,11 @@ import { config } from './config.js';
 
 export const socket = io.connect(config.appUrl, { transports : ['websocket'] });
 
-// function init() {
-    
-// }
+
 const urlParams = new URLSearchParams(window.location.search);
 export const roomId = urlParams.get('roomId');
 export let roomInfo = {};
 
-console.log(socket);
 export function canDraw() {
     return roomInfo.users[roomInfo.drawingUser]?.socketId === socket.id;
 }
@@ -39,6 +36,7 @@ socket.on('turnUpdate', (data) => {
 let timerInterval;
 function updateFrontend() {
     document.getElementById('chat-input').disabled = canDraw();
+    document.getElementById('drawing-tools').style.display = canDraw() ? 'flex' : 'none';
 
     const canvas = document.getElementById('board');
     const context = canvas.getContext('2d');
