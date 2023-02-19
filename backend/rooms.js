@@ -34,8 +34,9 @@ function moveRoomTurn(roomId) {
     room.drawingUser++;
   }
 
-  if (room.round > room.totalRounds) {
+  if (room.round >= room.totalRounds) {
     //finishRoom
+    room.drawingUser = -1;
     return true;
   }
 
@@ -49,6 +50,7 @@ function moveRoomTurn(roomId) {
   room.guessedUsers = [];
   room.word = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
   room.time = room.turnTime;
+  room.drawingPath = [];
 
   for (const user of room.users) {
     user.guessed = false;
@@ -74,7 +76,7 @@ function createRoom(params) {
     round: 0,
     drawingUser: -1,
     word: "",
-    totalRounds: params.totalRounds || 3,
+    totalRounds: params.totalRounds || 1,
     turnTime: params.turnTime || 120,
     drawingPath: [],
     isPrivate: params.isPrivate || false,

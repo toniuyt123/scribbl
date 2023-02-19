@@ -93,8 +93,9 @@ io.on("connection", (socket) => {
 
     if (data.content == correctWord) {
       user.points +=
-        100 / (roomsInfo[userRoom(socket.id)].guessedUsers.length + 1);
+        200 / (roomsInfo[userRoom(socket.id)].guessedUsers.length + 1);
       user.guessed = true;
+      roomsInfo[userRoom(socket.id)].users[roomsInfo[userRoom(socket.id)].drawingUser].points += 50;
 
       io.in(userRoom(socket.id)).emit("guessed", user);
       roomsInfo[userRoom(socket.id)].guessedUsers.push(socket.id);
@@ -129,7 +130,7 @@ io.on("connection", (socket) => {
     if (! leavingUser) {
       return;
     }
-    
+
     socket.to(userRoom(socket.id)).emit("leave", {
       username: leavingUser.username,
     });

@@ -27,7 +27,23 @@ export default class Room extends BaseElement {
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.beginPath();
 
-      this.initTimerInterval();
+      //this.initTimerInterval();
+    });
+
+    socket.on("endRoom", (data) => {
+      this.roomInfo = data;
+      this.gameEnded = true;
+      this.winners = [];
+
+      this.roomInfo.users
+        .sort((a, b) => b.points - a.points)
+        .forEach((player, i, arr) => {
+          if (i === 0) {
+            this.winners.push(player);
+          }
+        });
+
+      this.render();
     });
   }
 
@@ -96,6 +112,22 @@ export default class Room extends BaseElement {
                 </button>
               `}
               <canvas id="board"> </canvas>
+              ${this.gameEnded && html`
+                <div class="absolute top-0 text-center bg-gray-500 py-40 w-full h-full space-y-2">
+                  <p class="text-xl">Game Ended. Winners:</p>
+                  <div class="flex gap-4 justify-center">
+                  ${this.winners.map(player => { return html`
+                    <div>
+                      <p class="font-bold">${player.username}, ${player.points} points</p>
+                      <img
+                        class="h-12 w-12 rounded-full object-cover ring-1 ring-gray-50"
+                        src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${player.username}&radius=50"
+                      />
+                    </div>
+                  `; })}
+                  </div>
+                </div>
+              `}
               <div
                 id="drawing-tools"
                 class="${this.canDraw()
