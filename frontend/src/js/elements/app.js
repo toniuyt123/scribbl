@@ -11,6 +11,7 @@ export default class Room extends BaseElement {
     if (roomId) {
       window.history.pushState({}, "", `?roomId=${roomId}`);
     }
+    
     this.innerHTML = html`
       <div class="h-screen w-screen overflow-hidden">
         <div

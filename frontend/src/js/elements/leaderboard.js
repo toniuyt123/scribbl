@@ -42,6 +42,7 @@ export default class Leaderboard extends BaseElement {
               rank="${player.rank}"
               isdrawing="${player.isDrawing}"
               isplayer="${player.socketId === io.socket.id}"
+              hasguessed="${player.hasguessed}"
             ></player-badge>
           `
         )}
@@ -71,8 +72,18 @@ export default class Leaderboard extends BaseElement {
       this.setPlayers(
         this.players.map((player) => ({
           ...player,
+          hasguessed: player.username === data.username,
           points:
             player.username === data.username ? data.points : player.points,
+        }))
+      );
+    });
+
+    io.socket.on('turnUpdate', () => {
+      this.setPlayers(
+        this.players.map((player) => ({
+          ...player,
+          hasguessed: false,
         }))
       );
     });

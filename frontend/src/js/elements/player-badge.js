@@ -2,11 +2,11 @@ import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 
 export default class PlayerBadge extends BaseElement {
-  init({ username, points, rank, isdrawing, isplayer }) {
+  init({ username, points, rank, isdrawing, isplayer, hasguessed }) {
     this.innerHTML = html`
       <div
         class="${isdrawing == "true" &&
-        "flex-row-reverse"} flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur"
+        "flex-row-reverse"} flex w-80 items-center justify-between gap-4 rounded-sm bg-gray-100/70 p-4 shadow-sm backdrop-blur ${hasguessed && 'text-green-400'}"
       >
         <div class="relative">
           <img
@@ -23,7 +23,7 @@ export default class PlayerBadge extends BaseElement {
             </div>
           `}
         </div>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center ">
           <div class="${isplayer && "text-blue-500"} text-xl font-semibold">
             ${username} ${isplayer && "(You)"}
           </div>

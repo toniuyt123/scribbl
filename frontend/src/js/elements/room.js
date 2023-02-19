@@ -8,9 +8,12 @@ import * as drawing from "../drawing.js";
 export default class Room extends BaseElement {
   init({ id, username }) {
     const roomId = id;
-
-    socket.emit("join", { roomId, username }, async (roomInfo) => {
+    
+    socket.emit("join", { roomId, username }, async (roomInfo, username) => {
+      console.log(username)
       this.roomInfo = roomInfo;
+      this.inviteLink = `${config.inviteUrl}/?roomId=${this.roomInfo.roomId}`;
+      this.props.username = username;
       this.render();
     });
 
@@ -24,20 +27,23 @@ export default class Room extends BaseElement {
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.beginPath();
 
-      clearInterval(this.timerInterval);
-      const timer = document.getElementById("timer");
-      timer.innerHTML = this.roomInfo.turnTime / 1000;
-
-      this.timerInterval = setInterval(() => {
-        const newTime = parseInt(timer.innerHTML) - 1;
-        timer.innerHTML = newTime;
-
-        if (newTime === 0) {
-          console.log(clearInterval);
-          clearInterval(timerInterval);
-        }
-      }, 1000);
+      this.initTimerInterval();
     });
+  }
+
+  initTimerInterval() {
+    clearInterval(this.timerInterval);
+    const timer = document.getElementById("timer");
+    timer.innerHTML = this.roomInfo.time;
+
+    this.timerInterval = setInterval(() => {
+      const newTime = parseInt(timer.innerHTML) - 1;
+      timer.innerHTML = newTime;
+
+      if (newTime === 0) {
+        clearInterval(timerInterval);
+      }
+    }, 1000);
   }
 
   render() {
@@ -47,13 +53,13 @@ export default class Room extends BaseElement {
         <div
           class="flex justify-between rounded-sm bg-gray-100/70 p-4 text-5xl tracking-tighter shadow-sm backdrop-blur"
         >
-          <!-- <p class="text-lg tracking-tight text-left">Invite: <br><span id="invite-link"></span></p> -->
           <div class="text-xs">
             <p class="text-sm tracking-tight">Invite:</p>
             <input
               class="max-w-xs rounded-l border border-solid border-blue-500 py-1 px-2"
               type="text"
               id="invite-link"
+              value="${this.inviteLink}"
               readonly
             />
             <button
@@ -70,7 +76,7 @@ export default class Room extends BaseElement {
             class="rounded-full border-2 border-black p-3 text-center text-2xl"
             id="timer"
           >
-            *
+            ${this.roomInfo.time || '*'}
           </p>
         </div>
         <div class="flex gap-4">
@@ -175,6 +181,20 @@ export default class Room extends BaseElement {
       socket.emit("startRoom");
     });
 
+    this.querySelector('#invite-link-btn').addEventListener('click', () => {
+      
+      if (navigator.clipboard) {
+        return navigator.clipboard.writeText(this.inviteLink);
+      }
+      this.querySelector('#invite-link').focus();
+      this.querySelector('#invite-link').select();
+      document.execCommand("copy")
+    });
+
+    
+    if (this.roomInfo.word) {
+      this.initTimerInterval();
+    }
     drawing.init(this.roomInfo); // TODO move this to the drawing element
   }
 

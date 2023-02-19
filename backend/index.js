@@ -48,8 +48,6 @@ function userRoom(id) {
 }
 
 io.on("connection", (socket) => {
-  console.log("conenction ", socket.id);
-
   socket.on("join", (data, callback) => {
     if (data.roomId == undefined) {
       data.roomId = socket.id;
@@ -60,7 +58,7 @@ io.on("connection", (socket) => {
     //ASSERT(rooms[room].length < 8)
 
     data.socketId = socket.id;
-    addUserToRoom(data);
+    const username = addUserToRoom(data);
 
     io.in(userRoom(socket.id)).emit("joined", {
       username: data.username,
@@ -68,7 +66,7 @@ io.on("connection", (socket) => {
 
     const word = roomsInfo[userRoom(socket.id)].word;
     roomsInfo[userRoom(socket.id)].word = censorWord(word);
-    callback(roomsInfo[userRoom(socket.id)]);
+    callback(roomsInfo[userRoom(socket.id)], username);
     roomsInfo[userRoom(socket.id)].word = word;
   });
 
@@ -128,6 +126,10 @@ io.on("connection", (socket) => {
       leavingUserIdx++;
     }
 
+    if (! leavingUser) {
+      return;
+    }
+    
     socket.to(userRoom(socket.id)).emit("leave", {
       username: leavingUser.username,
     });

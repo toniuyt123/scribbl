@@ -48,6 +48,7 @@ function moveRoomTurn(roomId) {
   room.users[room.drawingUser].isDrawing = true;
   room.guessedUsers = [];
   room.word = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
+  room.time = room.turnTime;
 
   for (const user of room.users) {
     user.guessed = false;
@@ -74,7 +75,7 @@ function createRoom(params) {
     drawingUser: -1,
     word: "",
     totalRounds: params.totalRounds || 3,
-    turnTime: params.turnTime || 120 * 1000,
+    turnTime: params.turnTime || 120,
     drawingPath: [],
     isPrivate: params.isPrivate || false,
     roomId,
@@ -101,9 +102,17 @@ function getRandomPublicRoom() {
   return createRoom({ roomId: randomId() });
 }
 
-function delay(ms) {
+function delay(roomId, seconds) {
+  const room = roomsInfo[roomId];
+
   return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), ms);
+    setInterval(() => {
+      room.time -= 1;
+
+      if (room.time === 0) {
+        resolve()
+      }
+    }, 1000);
   });
 }
 
@@ -129,15 +138,19 @@ async function startRoom(roomId) {
     const gameEnded = moveRoomTurn(roomId);
 
     if (gameEnded) {
-      const finalInfo = roomsInfo[params.roomId];
-      roomsInfo[params.roomId] = undefined;
+      const finalInfo = roomsInfo[roomId];
+      roomsInfo[roomId] = undefined;
       return finalInfo;
     }
 
     await Promise.any([
-      delay(roomsInfo[roomId].turnTime),
+      delay(roomId, roomsInfo[roomId].turnTime),
       waitForCompleted(roomId),
     ]);
+
+    if (roomsInfo[roomId].users.length === 0) {
+      break;
+    }
   }
 
 }
@@ -159,6 +172,8 @@ function addUserToRoom(params) {
     isDrawing: false,
     socketId: params.socketId,
   });
+
+  return params.username;
 }
 
 function addRoomTurnCallback(cb) {
