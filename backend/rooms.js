@@ -105,37 +105,6 @@ function getRandomPublicRoom() {
   return createRoom({ roomId: randomId() });
 }
 
-function delay(roomId, seconds) {
-  const room = roomsInfo[roomId];
-
-  return new Promise((resolve, reject) => {
-    setInterval(() => {
-      room.time -= 1;
-
-      if (room.time === 0) {
-        resolve()
-      }
-    }, 1000);
-  });
-}
-
-function waitForCompleted(roomId) {
-  const room = roomsInfo[roomId];
-
-  return new Promise((resolve, reject) => {
-    setInterval(() => {
-      if (room.guessedUsers.length === room.users.length - 1) {
-        resolve(); // all users have guessed
-      } else if (
-        room.drawingUser >= room.users.length ||
-        !room.users[room.drawingUser].isDrawing
-      ) {
-        resolve(); // user left
-      }
-    }, 100);
-  });
-}
-
 async function startRoom(roomId) {
   while (true) {
     const gameEnded = moveRoomTurn(roomId);
@@ -146,16 +115,46 @@ async function startRoom(roomId) {
       return finalInfo;
     }
 
+    const room = roomsInfo[roomId];
+    const intervals = [];
     await Promise.any([
-      delay(roomId, roomsInfo[roomId].turnTime),
-      waitForCompleted(roomId),
+      new Promise((resolve, reject) => {
+        intervals.push(
+          setInterval(() => {
+            room.time -= 1;
+
+            console.log(room.time);
+
+            if (room.time === 0) {
+              resolve();
+            }
+          }, 1000)
+        );
+      }),
+      new Promise((resolve, reject) => {
+        intervals.push(
+          setInterval(() => {
+            if (room.guessedUsers.length === room.users.length - 1) {
+              resolve(); // all users have guessed
+            } else if (
+              room.drawingUser >= room.users.length ||
+              !room.users[room.drawingUser].isDrawing
+            ) {
+              resolve(); // user left
+            }
+          }, 100)
+        );
+      }),
     ]);
+
+    for (const interval of intervals) {
+      clearInterval(interval);
+    }
 
     if (roomsInfo[roomId].users.length === 0) {
       break;
     }
   }
-
 }
 
 function addUserToRoom(params) {
@@ -192,7 +191,7 @@ function getUserInfo(roomId, socketId) {
 }
 
 function censorWord(word) {
-  return word.replaceAll(/\w/g, '_ ');
+  return word.replaceAll(/\w/g, "_ ");
 }
 
 module.exports = {
