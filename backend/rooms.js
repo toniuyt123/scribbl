@@ -140,6 +140,7 @@ async function startRoom(roomId) {
             if (room.guessedUsers.length === room.users.length - 1) {
               resolve(); // all users have guessed
             } else if (
+              room.drawingUser == -1 ||
               room.drawingUser >= room.users.length ||
               !room.users[room.drawingUser].isDrawing
             ) {
