@@ -139,7 +139,7 @@ io.on("connection", (socket) => {
 
     roomsInfo[userRoom(socket.id)].users.splice(leavingUserIdx, 1);
 
-    if (roomsInfo[userRoom(socket.id)].word) {
+    if (roomsInfo[userRoom(socket.id)].word && leavingUserIdx <= roomsInfo[userRoom(socket.id)].drawingUser) {
       roomsInfo[userRoom(socket.id)].drawingUser -= 1;
     }
   });
