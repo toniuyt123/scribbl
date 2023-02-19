@@ -62,6 +62,7 @@ io.on("connection", (socket) => {
 
     io.in(userRoom(socket.id)).emit("joined", {
       username: data.username,
+      socketId: socket.id,
     });
 
     const word = roomsInfo[userRoom(socket.id)].word;
@@ -137,7 +138,10 @@ io.on("connection", (socket) => {
     });
 
     roomsInfo[userRoom(socket.id)].users.splice(leavingUserIdx, 1);
-    roomsInfo[userRoom(socket.id)].drawingUser -= 1;
+
+    if (roomsInfo[userRoom(socket.id)].word) {
+      roomsInfo[userRoom(socket.id)].drawingUser -= 1;
+    }
   });
 
   socket.on("getRandomPublicRoom", (data, callback) => {

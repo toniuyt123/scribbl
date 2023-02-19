@@ -23,6 +23,7 @@ function moveRoomTurn(roomId) {
   //new round
   const room = roomsInfo[roomId];
 
+  console.log(room.drawingUser);
   if (room.drawingUser != -1 && room.drawingUser < room.users.length) {
     room.users[room.drawingUser].isDrawing = false;
   }

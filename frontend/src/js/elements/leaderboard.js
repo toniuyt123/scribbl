@@ -59,11 +59,13 @@ export default class Leaderboard extends BaseElement {
           username: data.username,
           points: 0,
           isDrawing: false,
+          socketId: data.socketId,
         },
       ]);
     });
 
     io.socket.on("leave", (data) => {
+      console.log(data);
       this.setPlayers(
         this.players.filter((player) => player.socketId !== data.socketId)
       );
