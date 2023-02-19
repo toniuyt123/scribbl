@@ -27,7 +27,7 @@ export default class PlayerBadge extends BaseElement {
           <div class="${isplayer && "text-blue-500"} text-xl font-semibold">
             ${username} ${isplayer && "(You)"}
           </div>
-          <div class="text-md">Points: ${points}</div>
+          <div class="text-md">Points: ${Math.round(points)}</div>
         </div>
         <div class="w-12 text-2xl font-bold">#${rank}</div>
       </div>

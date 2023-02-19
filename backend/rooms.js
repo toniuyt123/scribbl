@@ -144,7 +144,7 @@ async function startRoom(roomId) {
 
     if (gameEnded) {
       const finalInfo = roomsInfo[roomId];
-      roomsInfo[roomId] = undefined;
+      delete roomsInfo[roomId];
       return finalInfo;
     }
 
