@@ -43,6 +43,7 @@ export default class Leaderboard extends BaseElement {
               isdrawing="${player.isDrawing}"
               isplayer="${player.socketId === io.socket.id}"
               hasguessed="${player.hasguessed}"
+              socketid="${player.socketId}"
             ></player-badge>
           `
         )}
@@ -64,7 +65,7 @@ export default class Leaderboard extends BaseElement {
 
     io.socket.on("leave", (data) => {
       this.setPlayers(
-        this.players.filter((player) => player.username !== data.username)
+        this.players.filter((player) => player.socketId !== data.socketId)
       );
     });
 

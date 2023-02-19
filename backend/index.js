@@ -133,6 +133,7 @@ io.on("connection", (socket) => {
 
     socket.to(userRoom(socket.id)).emit("leave", {
       username: leavingUser.username,
+      socketId: leavingUser.socketId
     });
 
     roomsInfo[userRoom(socket.id)].users.splice(leavingUserIdx, 1);

@@ -2,7 +2,7 @@ import html from "../utils/htmlTemplate";
 import BaseElement from "./BaseElement";
 
 export default class PlayerBadge extends BaseElement {
-  init({ username, points, rank, isdrawing, isplayer, hasguessed }) {
+  init({ username, points, rank, isdrawing, isplayer, hasguessed, socketid }) {
     this.innerHTML = html`
       <div
         class="${isdrawing == "true" &&
@@ -11,7 +11,7 @@ export default class PlayerBadge extends BaseElement {
         <div class="relative">
           <img
             class="h-12 w-12 rounded-full object-cover ring-1 ring-gray-50"
-            src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${username}&radius=50"
+            src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${socketid}&radius=50"
           />
           ${isdrawing == "true" &&
           html`

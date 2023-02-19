@@ -121,7 +121,7 @@ export default class Room extends BaseElement {
                       <p class="font-bold">${player.username}, ${player.points} points</p>
                       <img
                         class="h-12 w-12 rounded-full object-cover ring-1 ring-gray-50"
-                        src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${player.username}&radius=50"
+                        src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${player.socketid}&radius=50"
                       />
                     </div>
                   `; })}
