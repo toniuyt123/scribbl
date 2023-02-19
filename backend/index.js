@@ -136,6 +136,7 @@ io.on("connection", (socket) => {
     });
 
     roomsInfo[userRoom(socket.id)].users.splice(leavingUserIdx, 1);
+    roomsInfo[userRoom(socket.id)].drawingUser -= 1;
   });
 
   socket.on("getRandomPublicRoom", (data, callback) => {
