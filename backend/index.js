@@ -16,6 +16,7 @@ const {
   addUserToRoom,
   startRoom,
   roomsInfo,
+  roomCanvases,
   getUserInfo,
   getRandomPublicRoom,
   createRoom,
@@ -67,20 +68,25 @@ io.on("connection", (socket) => {
 
     const word = roomsInfo[userRoom(socket.id)].word;
     roomsInfo[userRoom(socket.id)].word = censorWord(word);
-    callback(roomsInfo[userRoom(socket.id)], username);
+    callback(
+      roomsInfo[userRoom(socket.id)],
+      username,
+      roomCanvases[userRoom(socket.id)].toDataURL()
+    );
     roomsInfo[userRoom(socket.id)].word = word;
   });
 
   socket.on("mousemove", (data) => {
-    const room = roomsInfo[userRoom(socket.id)];
+    const roomId = userRoom(socket.id);
+    const room = roomsInfo[roomId];
+
+    drawData(data, roomCanvases[roomId].getContext("2d"));
 
     if (room.users[room.drawingUser].socketId !== socket.id) {
       return;
     }
 
-    room.drawingPath.push(data);
-
-    socket.to(userRoom(socket.id)).emit("drawing", data);
+    socket.to(roomId).emit("drawing", data);
   });
 
   socket.on("msg", (data) => {
@@ -96,7 +102,9 @@ io.on("connection", (socket) => {
       user.points +=
         200 / (roomsInfo[userRoom(socket.id)].guessedUsers.length + 1);
       user.guessed = true;
-      roomsInfo[userRoom(socket.id)].users[roomsInfo[userRoom(socket.id)].drawingUser].points += 50;
+      roomsInfo[userRoom(socket.id)].users[
+        roomsInfo[userRoom(socket.id)].drawingUser
+      ].points += 50;
 
       io.in(userRoom(socket.id)).emit("guessed", user);
       roomsInfo[userRoom(socket.id)].guessedUsers.push(socket.id);
@@ -128,18 +136,21 @@ io.on("connection", (socket) => {
       leavingUserIdx++;
     }
 
-    if (! leavingUser) {
+    if (!leavingUser) {
       return;
     }
 
     socket.to(userRoom(socket.id)).emit("leave", {
       username: leavingUser.username,
-      socketId: leavingUser.socketId
+      socketId: leavingUser.socketId,
     });
 
     roomsInfo[userRoom(socket.id)].users.splice(leavingUserIdx, 1);
 
-    if (roomsInfo[userRoom(socket.id)].word && leavingUserIdx <= roomsInfo[userRoom(socket.id)].drawingUser) {
+    if (
+      roomsInfo[userRoom(socket.id)].word &&
+      leavingUserIdx <= roomsInfo[userRoom(socket.id)].drawingUser
+    ) {
       roomsInfo[userRoom(socket.id)].drawingUser -= 1;
     }
   });
@@ -157,10 +168,10 @@ io.on("connection", (socket) => {
 addRoomTurnCallback((roomId) => {
   const room = roomsInfo[roomId];
   const word = room.word;
-  
+
   room.word = censorWord(word);
-  
-  const socket = io.of('/').sockets.get(room.users[room.drawingUser].socketId);
+
+  const socket = io.of("/").sockets.get(room.users[room.drawingUser].socketId);
 
   socket.to(roomId).emit("turnUpdate", room);
   room.word = word;
@@ -170,6 +181,39 @@ addRoomTurnCallback((roomId) => {
 http.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
+
+function drawLine(from, to, ctx) {
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(to.x, to.y);
+  ctx.lineCap = "round";
+  ctx.lineWidth = to.drawSize || drawSize;
+  ctx.strokeStyle = to.drawColor || drawColor;
+  ctx.stroke();
+}
+
+const clients = {};
+
+function drawData(data, ctx) {
+  let prevData = clients[data.id];
+
+  if (prevData === undefined) {
+    clients[data.id] = data;
+    prevData = data;
+  }
+
+  if (prevData.drawColor != data.drawColor) {
+    ctx.beginPath();
+  }
+
+  if (prevData.drawSize != data.drawSize) {
+    ctx.beginPath();
+  }
+
+  if (data.drawing) {
+    drawLine(prevData, data, ctx);
+  }
+  clients[data.id] = data;
+}
 
 module.exports = {
   http,

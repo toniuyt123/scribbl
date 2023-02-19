@@ -8,14 +8,19 @@ import * as drawing from "../drawing.js";
 export default class Room extends BaseElement {
   init({ id, username }) {
     const roomId = id;
-    
-    socket.emit("join", { roomId, username }, async (roomInfo, username) => {
-      console.log(username)
-      this.roomInfo = roomInfo;
-      this.inviteLink = `${config.inviteUrl}/?roomId=${this.roomInfo.roomId}`;
-      this.props.username = username;
-      this.render();
-    });
+
+    socket.emit(
+      "join",
+      { roomId, username },
+      async (roomInfo, username, base64canvasData) => {
+        console.log(username);
+        this.base64canvasData = base64canvasData;
+        this.roomInfo = roomInfo;
+        this.inviteLink = `${config.inviteUrl}/?roomId=${this.roomInfo.roomId}`;
+        this.props.username = username;
+        this.render();
+      }
+    );
 
     socket.on("turnUpdate", (data) => {
       this.roomInfo = data;
@@ -92,7 +97,7 @@ export default class Room extends BaseElement {
             class="rounded-full border-2 border-black p-3 text-center text-2xl"
             id="timer"
           >
-            ${this.roomInfo.time || '*'}
+            ${this.roomInfo.time || "*"}
           </p>
         </div>
         <div class="flex gap-4">
@@ -112,19 +117,26 @@ export default class Room extends BaseElement {
                 </button>
               `}
               <canvas id="board"> </canvas>
-              ${this.gameEnded && html`
-                <div class="absolute top-0 text-center bg-gray-500 py-40 w-full h-full space-y-2">
+              ${this.gameEnded &&
+              html`
+                <div
+                  class="absolute top-0 h-full w-full space-y-2 bg-gray-500 py-40 text-center"
+                >
                   <p class="text-xl">Game Ended. Winners:</p>
-                  <div class="flex gap-4 justify-center">
-                  ${this.winners.map(player => { return html`
-                    <div>
-                      <p class="font-bold">${player.username}, ${player.points} points</p>
-                      <img
-                        class="h-12 w-12 rounded-full object-cover ring-1 ring-gray-50"
-                        src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${player.socketid}&radius=50"
-                      />
-                    </div>
-                  `; })}
+                  <div class="flex justify-center gap-4">
+                    ${this.winners.map((player) => {
+                      return html`
+                        <div>
+                          <p class="font-bold">
+                            ${player.username}, ${player.points} points
+                          </p>
+                          <img
+                            class="h-12 w-12 rounded-full object-cover ring-1 ring-gray-50"
+                            src="https://api.dicebear.com/5.x/bottts-neutral/svg?seed=${player.socketid}&radius=50"
+                          />
+                        </div>
+                      `;
+                    })}
                   </div>
                 </div>
               `}
@@ -213,21 +225,19 @@ export default class Room extends BaseElement {
       socket.emit("startRoom");
     });
 
-    this.querySelector('#invite-link-btn').addEventListener('click', () => {
-      
+    this.querySelector("#invite-link-btn").addEventListener("click", () => {
       if (navigator.clipboard) {
         return navigator.clipboard.writeText(this.inviteLink);
       }
-      this.querySelector('#invite-link').focus();
-      this.querySelector('#invite-link').select();
-      document.execCommand("copy")
+      this.querySelector("#invite-link").focus();
+      this.querySelector("#invite-link").select();
+      document.execCommand("copy");
     });
 
-    
     if (this.roomInfo.word) {
       this.initTimerInterval();
     }
-    drawing.init(this.roomInfo); // TODO move this to the drawing element
+    drawing.init(this.roomInfo, this.base64canvasData); // TODO move this to the drawing element
   }
 
   canDraw() {

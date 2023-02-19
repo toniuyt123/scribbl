@@ -1,3 +1,4 @@
+const { createCanvas } = require("canvas");
 const { WORD_LIST } = require("./config.js");
 
 /*
@@ -17,6 +18,7 @@ const { WORD_LIST } = require("./config.js");
     }
 */
 const roomsInfo = {};
+const roomCanvases = {};
 const onRoomTurn = { callbacks: [] };
 
 function moveRoomTurn(roomId) {
@@ -52,7 +54,6 @@ function moveRoomTurn(roomId) {
   room.guessedUsers = [];
   room.word = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
   room.time = room.turnTime;
-  room.drawingPath = [];
 
   for (const user of room.users) {
     user.guessed = false;
@@ -72,6 +73,8 @@ function createRoom(params) {
     return;
   }
 
+  roomCanvases[roomId] = createCanvas(512, 488);
+
   return (roomsInfo[roomId] = {
     users: [],
     guessedUsers: [],
@@ -80,7 +83,6 @@ function createRoom(params) {
     word: "",
     totalRounds: params.totalRounds || 1,
     turnTime: params.turnTime || 120,
-    drawingPath: [],
     isPrivate: params.isPrivate || false,
     roomId,
   });
@@ -197,6 +199,7 @@ function censorWord(word) {
 
 module.exports = {
   roomsInfo,
+  roomCanvases,
   startRoom,
   createRoom,
   addUserToRoom,

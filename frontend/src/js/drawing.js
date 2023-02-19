@@ -3,10 +3,17 @@ import { socket, canDraw } from "./socket.js";
 import { config } from "./config.js";
 import { getCurrentRoom } from "./elements/room";
 
-export function init(roomInfo) {
+export function init(roomInfo, base64canvasData) {
   console.log("init called");
   const canvas = document.getElementById("board");
   const ctx = canvas.getContext("2d");
+
+  console.log(base64canvasData);
+  const img = new Image();
+  img.onload = function () {
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = base64canvasData;
 
   const id = Math.round(Date.now() * Math.random());
   let isDrawing = false;
@@ -55,9 +62,6 @@ export function init(roomInfo) {
     clients[data.id] = data;
   }
 
-  for (const data of roomInfo.drawingPath) {
-    drawData(data);
-  }
   socket.on("drawing", drawData);
 
   let lastEmit = Date.now();
