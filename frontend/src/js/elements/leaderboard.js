@@ -72,9 +72,9 @@ export default class Leaderboard extends BaseElement {
       this.setPlayers(
         this.players.map((player) => ({
           ...player,
-          hasguessed: player.username === data.username,
+          hasguessed: player.socketId === data.socketId,
           points:
-            player.username === data.username ? data.points : player.points,
+            player.socketId === data.socketId ? data.points : player.points,
         }))
       );
     });
