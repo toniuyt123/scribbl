@@ -28,6 +28,7 @@ function moveRoomTurn(roomId) {
     room.users[room.drawingUser].isDrawing = false;
   }
 
+  console.log('TT:', room.drawingUser, room.users.length);
   if (room.drawingUser >= room.users.length - 1) {
     room.round++;
     room.drawingUser = 0;
